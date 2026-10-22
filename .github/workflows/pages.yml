@@ -43,6 +43,8 @@ jobs:
         run: |
           mkdir -p dist/presentation
           cp research/presentation-prototype.html dist/presentation/index.html
+          mkdir -p dist/presentation/notes
+          cp research/speaker-notes.html dist/presentation/notes/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fa">
+  <title>Шпаргалка к презентации · AI в продуктовом дизайне</title>
+  <style>
+    :root { font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif; color: #17293b; background: #f5f7fa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, a { font: inherit; }
+    button { cursor: pointer; }
+    a { color: #285fd7; }
+    :focus-visible { outline: 3px solid #285fd7; outline-offset: 3px; }
+    .app { min-height: 100svh; display: grid; grid-template-columns: 252px minmax(0, 1fr); }
+    .sidebar { position: sticky; top: 0; height: 100svh; overflow: auto; background: #17293b; color: #f5f7fa; padding: 25px 16px 24px; }
+    .brand { padding: 0 12px 22px; border-bottom: 1px solid #456075; }
+    .brand small { color: #91b1f8; text-transform: uppercase; letter-spacing: .12em; font: 700 11px/1.4 ui-monospace, SFMono-Regular, monospace; }
+    .brand h1 { font-size: 23px; line-height: 1.12; letter-spacing: -.04em; margin: 11px 0 8px; }
+    .brand p { color: #aabac9; font-size: 13px; line-height: 1.45; margin: 0; }
+    .slide-list { display: grid; gap: 4px; padding-top: 16px; }
+    .slide-link { width: 100%; border: 0; background: transparent; color: #d5e0e9; display: grid; grid-template-columns: 29px 1fr; align-items: start; gap: 8px; padding: 10px 12px; text-align: left; border-radius: 6px; font-size: 13px; line-height: 1.25; }
+    .slide-link span { color: #8caafa; font: 700 11px/1.4 ui-monospace, SFMono-Regular, monospace; }
+    .slide-link:hover { background: #29435a; }
+    .slide-link[aria-current="true"] { background: #285fd7; color: white; font-weight: 700; }
+    .slide-link[aria-current="true"] span { color: white; }
+    .main { min-width: 0; padding: 31px clamp(28px, 5vw, 84px) 35px; display: flex; flex-direction: column; }
+    .topline { display: flex; justify-content: space-between; gap: 18px; align-items: center; color: #637487; border-bottom: 1px solid #ccd6df; padding-bottom: 18px; font-size: 14px; }
+    .topline b { color: #285fd7; font: 700 13px ui-monospace, SFMono-Regular, monospace; }
+    .topline a { white-space: nowrap; }
+    .note { width: min(100%, 940px); margin: auto 0; padding: 25px 0 18px; }
+    .kicker { display: flex; gap: 12px; align-items: center; color: #285fd7; text-transform: uppercase; letter-spacing: .1em; font: 700 12px ui-monospace, SFMono-Regular, monospace; }
+    .time { color: #64778b; background: #e8edf3; padding: 6px 9px; border-radius: 4px; letter-spacing: 0; }
+    h2 { font-size: clamp(35px, 3.6vw, 54px); line-height: 1.05; letter-spacing: -.055em; margin: 15px 0 22px; }
+    .say-label, .cue-label { display: block; color: #66798c; font: 700 12px ui-monospace, SFMono-Regular, monospace; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 11px; }
+    .say { font-size: clamp(21px, 2.1vw, 29px); line-height: 1.38; letter-spacing: -.025em; margin: 0 0 22px; }
+    .points { list-style: none; padding: 0; margin: 0; display: grid; gap: 11px; }
+    .points li { display: grid; grid-template-columns: 18px 1fr; gap: 13px; font-size: clamp(18px, 1.45vw, 22px); line-height: 1.38; }
+    .points li::before { content: "→"; color: #285fd7; font-weight: 700; }
+    .caution { margin-top: 21px; border-left: 4px solid #285fd7; padding: 8px 0 8px 17px; color: #4f6173; font-size: 17px; line-height: 1.42; }
+    .caution b { color: #17293b; }
+    .transition { width: min(100%, 940px); border-top: 1px solid #ccd6df; padding-top: 15px; color: #4e6175; font-size: 17px; line-height: 1.4; }
+    .transition p { margin: 0; }
+    .controls { display: flex; justify-content: space-between; gap: 12px; margin-top: 17px; }
+    .controls button { border: 1px solid #b6c6d4; background: #fff; color: #17293b; border-radius: 6px; padding: 12px 18px; font-weight: 700; min-height: 48px; }
+    .controls button:hover { border-color: #285fd7; color: #285fd7; }
+    .controls button:disabled { opacity: .35; cursor: default; }
+    @media (max-width: 760px) {
+      .app { display: block; }
+      .sidebar { position: static; height: auto; padding: 16px; }
+      .brand { padding: 0 4px 10px; }
+      .brand h1 { font-size: 20px; margin: 4px 0; }
+      .brand p { display: none; }
+      .slide-list { display: flex; gap: 5px; overflow-x: auto; padding: 10px 0 0; }
+      .slide-link { flex: none; width: 92px; display: block; min-height: 52px; padding: 6px 8px; font-size: 10px; }
+      .slide-link span { display: block; }
+      .main { min-height: calc(100svh - 155px); padding: 18px 20px 24px; }
+      .topline { font-size: 12px; }
+      .note { padding: 26px 0; }
+      h2 { font-size: 35px; margin-bottom: 23px; }
+      .say { font-size: 21px; }
+      .points li { font-size: 18px; }
+      .caution, .transition { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><small>AI / DESIGN WORKFLOWS</small><h1>Шпаргалка выступления</h1><p>16 слайдов · примерно 20–25 минут<br>← / → — перелистывать</p></div>
+      <nav id="slideList" class="slide-list" aria-label="Слайды"></nav>
+    </aside>
+    <main class="main">
+      <div class="topline"><b id="counter">01 / 16</b><a id="presentationLink" href="../" target="_blank" rel="noopener noreferrer">Открыть слайд ↗</a></div>
+      <article class="note" aria-live="polite">
+        <div class="kicker"><span id="slideNumber">Слайд 01</span><span id="duration" class="time"></span></div>
+        <h2 id="title"></h2>
+        <span class="say-label">Что сказать</span>
+        <p id="say" class="say"></p>
+        <ul id="points" class="points"></ul>
+        <div id="caution" class="caution" hidden></div>
+      </article>
+      <div class="transition"><span class="cue-label">Переход</span><p id="transition"></p></div>
+      <div class="controls"><button id="previous" type="button">← Назад</button><button id="next" type="button">Дальше →</button></div>
+    </main>
+  </div>
+  <script>
+    const notes = [
+      {
+        title: 'Начало', duration: '≈ 45 секунд',
+        say: 'Я провёл небольшое исследование по опыту других дизайн-команд и сегодня хочу поделиться основными направлениями в том, как они внедряют AI в работу.',
+        points: [
+          'Смотрел публичные кейсы российских и зарубежных команд: что именно они делают, на каком этапе подключают AI и где оставляют проверку за человеком.',
+          'Нас интересуют прикладные задачи нашей команды — исследования, CRM, таблицы и дашборды. Генерация визуала здесь не в центре внимания.',
+          'Это не рейтинг компаний и не обещание экономии времени у нас. Хочу показать процессы, которые можно проверить на наших задачах.'
+        ],
+        transition: 'Сначала покажу шесть процессов, которые повторяются в разных командах.'
+      },
+      {
+        title: 'Шесть процессов', duration: '≈ 1 минута',
+        say: 'Я объединил похожие применения AI в шесть процессов — от подготовки исследования до работающего прототипа.',
+        points: [
+          'Исследование: подготовить план, расшифровать интервью, собрать темы из обратной связи.',
+          'Работа со знаниями и решением: найти прежние выводы, продумать сценарии и редкие состояния, проверить поведение в прототипе.',
+          'В каждом процессе нам нужен понятный вход, результат и человек, который проверяет качество.'
+        ],
+        caution: 'Дизайн-система у нас уже прорабатывается отдельно. Генерация визуала для наших табличных продуктов сейчас менее актуальна.',
+        transition: 'Начну с самого раннего этапа — подготовки исследования.'
+      },
+      {
+        title: 'Подготовка исследования · Авито', duration: '≈ 1 минута',
+        say: 'В Авито UXLab AI подключают ещё до интервью: дают ему бриф, аудиторию и шаблон исследования, а на выходе получают варианты метода, гипотез и гайда.',
+        points: [
+          'Это удобно, когда входные материалы разрозненные и надо быстро увидеть несколько возможных направлений.',
+          'Исследователь не принимает черновик целиком: проверяет метод и убирает наводящие вопросы.',
+          'У нас можно взять один реальный бриф по CRM, собрать два варианта гайда и сравнить их полноту и нейтральность.'
+        ],
+        caution: 'Авито описывает процесс, но не публикует замер скорости для этой задачи.',
+        transition: 'У Авито есть ещё несколько конкретных задач; покажу их на следующем слайде.'
+      },
+      {
+        title: 'Пять задач Авито UXLab', duration: '≈ 1 минута 45 секунд',
+        say: 'Здесь видно, что команда применяет AI не для одной большой магической задачи, а для нескольких понятных шагов исследования.',
+        points: [
+          'Около 1 000 свободных ответов CSAT/CES: AI размечает причины недовольства и считает частые темы.',
+          'Интервью: сначала текст из записи, затем десять главных вопросов с короткими ответами по транскрипту.',
+          'Карточка вакансии: AI предлагает пять возможных причин быстрого ухода и способ проверить каждую.',
+          'Воркшоп по сложному B2B-продукту: из аналитики, поддержки и JTBD получается черновик упражнений.',
+          'Деск-ресёрч: поиск англоязычных источников по конкретному вопросу. Примеры промптов открываются по кнопкам на слайде.'
+        ],
+        caution: 'Промпты в презентации адаптированы по статье. Частоты, гипотезы и найденные источники нужно перепроверять.',
+        transition: 'Следующий кейс ближе к нам по контексту: исследования CRM в Альфа-Банке.'
+      },
+      {
+        title: 'Транскрибация · Альфа-Банк', duration: '≈ 1 минута 15 секунд',
+        say: 'В команде ARC Альфа-Банка исследовали CRM SFA. На таком объёме расшифровка интервью становится отдельной большой работой.',
+        points: [
+          'В статье упоминаются 40 проектов и 460 интервью. Команда использует Whisper для записи в текст и GPT для черновика выводов.',
+          'По их оценке, час записи обрабатывается примерно за 15 минут вместо полутора–двух часов вручную.',
+          'Для нас полезная метрика — время от записи до сверенной цитаты, а не просто скорость автоматической расшифровки.'
+        ],
+        caution: 'Около 690 часов — расчёт самой команды для своего объёма, не универсальный результат. Для наших записей нужен разрешённый контур обработки.',
+        transition: 'Но Альфа-Банк использует AI не только для перевода аудио в текст.'
+      },
+      {
+        title: 'Три примера Альфа-Банка', duration: '≈ 1 минута 45 секунд',
+        say: 'Здесь три разных применения: разобрать интервью, улучшить вопрос и превратить сырую идею в проверяемую гипотезу.',
+        points: [
+          'Первое: Whisper расшифровывает час записи за 15 минут; GPT готовит черновик выводов, который исследователь сверяет с интервью.',
+          'Второе: вместо наводящего «Какие поля вызывают трудности?» AI предлагает попросить вспомнить последнюю заявку и рассказать, на что человек посмотрел первым.',
+          'Третье: мысль «сотрудник понимает премию» превращается в проверку — сможет ли он назвать три фактора расчёта после просмотра дашборда.',
+          'В конце статьи три рабочих правила: уточнять запрос по шагам, давать чистые данные и проверять итог.'
+        ],
+        caution: 'Для гипотезы о премии авторы предлагают 8–12 интервью. Это пример метода, а не доказательство самой гипотезы.',
+        transition: 'После интервью возникает другой вопрос: как не потерять общие темы в большом массиве ответов?'
+      },
+      {
+        title: 'Синтез обратной связи · Figma', duration: '≈ 1 минута 15 секунд',
+        say: 'Figma показывает масштаб задачи синтеза: 639 интервью нужно превратить в темы, по которым можно вернуться к словам конкретного человека.',
+        points: [
+          'AI помогает кодировать и группировать транскрипты, чтобы исследователь увидел повторяющиеся сюжеты.',
+          'Самое полезное для нас — цепочка «тема → участники → точные реплики», а не просто красивое саммари.',
+          'У нас можно объединить интервью и обращения по таблицам, фильтрам и дашбордам, сохранив ссылку на каждый источник.'
+        ],
+        caution: '639 — число интервью в исследовании Figma, не показатель точности AI.',
+        transition: 'На следующем слайде — что именно было внутри этой работы.'
+      },
+      {
+        title: 'Как Figma проверяет вывод', duration: '≈ 1 минута 45 секунд',
+        say: 'После 639 интервью у Figma получилось около двух миллионов слов. Их инструмент помогает пройти от массива текста до проверяемой темы.',
+        points: [
+          'Система поставила 40 701 смысловую метку и выделила 553 темы, которые повторялись у разных людей.',
+          'Например, тема «AI ускорил работу, но вырос страх за качество» встретилась у 47 участников.',
+          'Исследователь может открыть этих участников, увидеть точные реплики и прочитать полную расшифровку.',
+          'Для нашей CRM аналогичная цепочка: «непонятны фильтры» → интервью → цитаты → проверка, одинаковая ли проблема у людей.'
+        ],
+        caution: 'Числа показывают масштаб обработки. Смысл темы и противоречия всё равно оценивает исследователь.',
+        transition: 'Теперь посмотрим, что происходит с исследованиями после завершения отчёта.'
+      },
+      {
+        title: 'Поиск знаний · Microsoft', duration: '≈ 1 минута 10 секунд',
+        say: 'Microsoft Core AI описывает поиск по уже завершённому исследованию: один набор материалов может отвечать на разные вопросы команды.',
+        points: [
+          'PM спрашивает, куда вложиться; дизайнер — чего пользователям не хватает; инженер — какие есть ограничения.',
+          'AI-агент ищет ответ в исследовании и показывает данные, на которых он основан.',
+          'Для нас это поиск по архиву CRM с указанием документа, цитаты и даты, чтобы не повторять уже разобранные вопросы.'
+        ],
+        caution: 'В статье нет измерения, насколько быстрее стали находить ответы.',
+        transition: 'Покажу, как команда Microsoft организует сами знания и проверяет ответ агента.'
+      },
+      {
+        title: 'Как Microsoft работает с архивом', duration: '≈ 1 минута 30 секунд',
+        say: 'У этого кейса две практики: упаковать знания так, чтобы ими было удобно пользоваться, и не принимать первый ответ AI без проверки.',
+        points: [
+          'Chris Gunderson хранит роли, задачи и частые боли пользователей в Markdown-файлах — их читают люди и AI.',
+          'Sara Chizari сделала агента по одному завершённому исследованию. Команда задаёт ему вопросы по своим задачам.',
+          'Sara сначала формулирует собственный вывод, а затем просит AI найти интервью, которые этому выводу противоречат.',
+          'Для нас конкретный запрос мог бы быть: «Почему раньше меняли фильтры?» — и рядом открыть исходное исследование.'
+        ],
+        transition: 'От накопленных знаний перейду к проектированию: где AI помогает не пропустить редкий сценарий.'
+      },
+      {
+        title: 'Сценарии и состояния · Яндекс', duration: '≈ 1 минута 10 секунд',
+        say: 'Дизайнер Яндекса описывает AI как способ расширить список сценариев до того, как команда ушла в детальный макет.',
+        points: [
+          'В модель передают задачу и ограничения. Она предлагает другие ходы и случаи вне основного пути.',
+          'Дизайнер отбирает применимое: редкий случай полезен только тогда, когда он возможен в продукте.',
+          'Для CRM это роли и права, пустые таблицы, долгая загрузка, массовые действия и ошибки сохранения.'
+        ],
+        caution: 'Это опыт одного дизайнера, без опубликованной метрики скорости или качества.',
+        transition: 'У него есть и следующий шаг — попробовать выбранный сценарий в рабочем прототипе.'
+      },
+      {
+        title: 'Как работает дизайнер Яндекса', duration: '≈ 1 минута 20 секунд',
+        say: 'Рабочий порядок у дизайнера такой: GPT для вариантов сценария, Cursor для интерактивного черновика, Figma Make для анимации.',
+        points: [
+          'Сначала он просит модель найти альтернативные пути и редкие случаи, затем сам выбирает, что проверять.',
+          'Выбранный путь становится кликабельным: можно увидеть смену экранов и поведение интерфейса.',
+          'Пример для нашей команды: нет прав на действие → пустая таблица после фильтра → ошибка массового действия.'
+        ],
+        caution: 'Последняя цепочка — наш пример для CRM, а не опубликованный экран Яндекса. В интервью конкретный экран не показан.',
+        transition: 'Когда важно обсудить поведение с командой, полезен прототип, а не только набор статичных экранов.'
+      },
+      {
+        title: 'Интерактивные прототипы · DoorDash', duration: '≈ 1 минута 15 секунд',
+        say: 'DoorDash показывает, как дизайнеры используют AI, чтобы раньше обсуждать работающий сценарий — с переходами и данными.',
+        points: [
+          'Статичный макет не всегда отвечает на вопрос, что произойдёт после клика, ошибки или изменения данных.',
+          'Команда использует Figma Make, общие шаблоны кода и работу с инженером — инструмент зависит от глубины проверки.',
+          'Для нас это может быть прототип «фильтр → выбор строк → массовое действие → подтверждение → ошибка или успех».'
+        ],
+        caution: 'DoorDash не публикует среднюю экономию времени для всего процесса. Прототип не равен готовому к релизу коду.',
+        transition: 'Следующий слайд показывает три уровня таких прототипов.'
+      },
+      {
+        title: 'Три уровня прототипа · DoorDash', duration: '≈ 1 минута 30 секунд',
+        say: 'DoorDash не делает все прототипы одинаково. Команда выбирает глубину по тому, какой вопрос нужно проверить.',
+        points: [
+          'Быстрый черновик в Figma Make — показать идею и дать её прокликать.',
+          'Starter Dough — общие кодовые шаблоны. В примере с главной страницей дизайнер менял интерфейс, коллега добавлял сегменты, инженер подключал реальные данные.',
+          'В новом AI-приложении онбординг пробовали прямо в коде вместе с инженером.',
+          'Для нас важно заранее сказать, нужен одноразовый прототип для обсуждения или основа, которую будут развивать.'
+        ],
+        caution: 'Опасная середина: прототип выглядит готовым, но его код не рассчитан на развитие.',
+        transition: 'На этом кейсы заканчиваются. Что из них реально имеет смысл проверить на наших задачах?'
+      },
+      {
+        title: 'Что можно проверить у нас', duration: '≈ 1 минута 30 секунд',
+        say: 'Я бы оценивал не AI-инструменты сами по себе, а конкретные этапы работы и качество результата на наших задачах.',
+        points: [
+          'Для исследования — взять один реальный бриф и сравнить планы и вопросы; для интервью — измерить время до сверенных цитат.',
+          'Для синтеза и поиска — требовать перехода к первоисточнику и смотреть, насколько легко найти актуальный ответ.',
+          'Для сценариев и прототипов — проверить покрытие ролей, ошибок и состояний и время до рабочего ревью.',
+          'После этого уже можно решить, какие процессы дают нам пользу и какие ограничения нужно снять.'
+        ],
+        transition: 'И последнее — какой общий вывод я вынес из этих кейсов.'
+      },
+      {
+        title: 'Общий вывод', duration: '≈ 45 секунд',
+        say: 'Нейросети не заменяют дизайнеров. Они добавляют нам возможности на отдельных этапах работы.',
+        points: [
+          'AI помогает быстрее собрать материал, увидеть больше вариантов и показать поведение до разработки.',
+          'Но поставить правильный вопрос, понять контекст, проверить источник и принять решение всё равно должна команда.',
+          'Для нас следующий шаг — проверить эти процессы на собственных задачах и посмотреть, где результат действительно становится лучше.'
+        ],
+        transition: 'Дальше можно обсудить, какие из шести процессов чаще всего тормозят нашу работу сейчас.'
+      }
+    ];
+
+    const pad = n => String(n).padStart(2, '0');
+    const list = document.getElementById('slideList');
+    list.innerHTML = notes.map((note, i) => `<button class="slide-link" type="button" data-slide="${i}"><span>${pad(i+1)}</span>${note.title}</button>`).join('');
+    let index = Math.max(0, Math.min(notes.length - 1, (Number((location.hash.match(/slide-(\d+)/) || [])[1]) || 1) - 1));
+    function render() {
+      const note = notes[index];
+      document.getElementById('counter').textContent = `${pad(index+1)} / ${notes.length}`;
+      document.getElementById('slideNumber').textContent = `Слайд ${pad(index+1)}`;
+      document.getElementById('duration').textContent = note.duration;
+      document.getElementById('title').textContent = note.title;
+      document.getElementById('say').textContent = note.say;
+      const points = document.getElementById('points');
+      points.replaceChildren(...note.points.map(point => { const li = document.createElement('li'); li.textContent = point; return li; }));
+      const caution = document.getElementById('caution');
+      caution.hidden = !note.caution;
+      caution.textContent = note.caution ? `Важно: ${note.caution}` : '';
+      document.getElementById('transition').textContent = note.transition;
+      document.getElementById('presentationLink').href = `../#slide-${index+1}`;
+      document.getElementById('previous').disabled = index === 0;
+      document.getElementById('next').disabled = index === notes.length - 1;
+      list.querySelectorAll('.slide-link').forEach((button, i) => button.setAttribute('aria-current', String(i === index)));
+      history.replaceState(null, '', `#slide-${index+1}`);
+    }
+    function setSlide(next) { index = Math.max(0, Math.min(notes.length - 1, next)); render(); }
+    list.addEventListener('click', event => { const button = event.target.closest('[data-slide]'); if (button) setSlide(Number(button.dataset.slide)); });
+    document.getElementById('previous').addEventListener('click', () => setSlide(index-1));
+    document.getElementById('next').addEventListener('click', () => setSlide(index+1));
+    document.addEventListener('keydown', event => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown') { event.preventDefault(); setSlide(index+1); }
+      else if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); setSlide(index-1); }
+    });
+    addEventListener('hashchange', () => { const match = location.hash.match(/slide-(\d+)/); if (match) setSlide(Number(match[1])-1); });
+    render();
+  </script>
+</body>
+</html>
