@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>AI в работе продуктового дизайна — прототип презентации</title>
+  <!-- Working presentation prototype: visual direction A. -->
+  <style>
+    :root {
+      font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+      font-synthesis: none;
+      --outer: #e9edf1;
+      --paper: #f8fafb;
+      --ink: #142435;
+      --muted: #647486;
+      --rule: #cdd7df;
+      --accent: #285fd7;
+      --accent-soft: #e5edff;
+      --surface: #fff;
+      --footer: #e5ebf1;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body { color: var(--ink); background: var(--paper); overflow: hidden; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+    .app-shell { width: 100%; height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+    .slide { width: min(100vw, calc(100svh * 16 / 9)); aspect-ratio: 16 / 9; min-height: 0; position: relative; overflow: hidden; background: var(--paper); display: flex; flex-direction: column; }
+    .slide::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(48, 94, 145, .045) 1px, transparent 1px), linear-gradient(90deg, rgba(48, 94, 145, .045) 1px, transparent 1px); background-size: 72px 72px; }
+    .slide > * { position: relative; z-index: 1; }
+    .slide-header { flex: none; min-height: 58px; border-bottom: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; padding: 0 48px; gap: 20px; }
+    .series { color: var(--accent); text-transform: uppercase; letter-spacing: .14em; font: 700 11px "SFMono-Regular", Consolas, monospace; }
+    .section-name { color: var(--muted); font: 500 12px "SFMono-Regular", Consolas, monospace; }
+    .slide-main { flex: 1; min-height: 0; padding: 34px 48px 28px; display: flex; flex-direction: column; }
+    .slide-footer { flex: none; min-height: 54px; display: flex; align-items: center; gap: 16px; border-top: 1px solid var(--rule); padding: 0 48px; color: var(--muted); font-size: 12px; }
+    .slide-footer .source-link { color: var(--accent); text-decoration: none; border-bottom: 1px solid currentColor; }
+    .slide-footer .spacer { flex: 1; }
+    .slide-index { font: 700 12px "SFMono-Regular", Consolas, monospace; color: var(--ink); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 { letter-spacing: -.055em; }
+    h1 { font-size: clamp(54px, 5.35vw, 82px); line-height: .99; font-weight: 650; max-width: 1020px; }
+    h2 { font-size: clamp(36px, 3.2vw, 54px); line-height: 1.05; font-weight: 640; max-width: 1060px; margin-bottom: 18px; }
+    h3 { font-size: 17px; letter-spacing: -.025em; }
+    .eyebrow { font: 700 12px "SFMono-Regular", Consolas, monospace; color: var(--accent); letter-spacing: .11em; text-transform: uppercase; margin-bottom: 17px; }
+    .lede { color: #4a5b6d; font-size: clamp(20px, 1.85vw, 28px); line-height: 1.33; max-width: 880px; }
+    .small-label { color: var(--muted); text-transform: uppercase; letter-spacing: .12em; font: 700 11px "SFMono-Regular", Consolas, monospace; display: block; margin-bottom: 12px; }
+    .badge { display: inline-flex; align-items: center; border: 1px solid var(--rule); color: var(--muted); background: rgba(255,255,255,.6); padding: 7px 11px; border-radius: 3px; font: 700 11px "SFMono-Regular", Consolas, monospace; white-space: nowrap; }
+    .accent-text { color: var(--accent); }
+
+    .cover { justify-content: space-between; }
+    .cover-top { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .cover h1 { margin: 40px 0 27px; }
+    .cover .lede { max-width: 780px; }
+    .cover-bottom { border-top: 1px solid var(--rule); padding-top: 21px; display: grid; grid-template-columns: 1fr 2fr; align-items: end; gap: 30px; }
+    .cover-bottom p { color: var(--muted); margin: 0; max-width: 300px; font-size: 13px; line-height: 1.45; }
+    .mini-sequence { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+    .mini-sequence span { display: block; min-height: 56px; background: var(--accent-soft); border-top: 3px solid var(--accent); padding: 9px 6px 5px; font: 700 11px/1.2 "SFMono-Regular", Consolas, monospace; color: var(--ink); }
+    .mini-sequence em { display: block; font-style: normal; color: var(--accent); font-size: 10px; margin-bottom: 5px; }
+
+    .map-slide .slide-main { gap: 16px; }
+    .map-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; }
+    .map-head h2 { max-width: 820px; margin: 0; }
+    .map-head p { max-width: 270px; color: var(--muted); font-size: 14px; line-height: 1.45; margin: 0 0 5px; }
+    .process-grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px; min-height: 0; }
+    .process-item { position: relative; border: 1px solid var(--rule); background: rgba(255,255,255,.74); padding: 17px 18px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+    .process-item .num { font: 700 11px "SFMono-Regular", Consolas, monospace; color: var(--accent); }
+    .process-item strong { font-size: clamp(17px, 1.55vw, 24px); line-height: 1.13; letter-spacing: -.04em; max-width: 270px; }
+    .process-item .foot { font-size: 11px; color: var(--muted); }
+    .process-item::after { content: "↗"; position: absolute; right: 17px; top: 15px; color: #b5c8e9; font-size: 21px; }
+
+    .case-title-row { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
+    .case-title-row h2 { margin-bottom: 19px; max-width: 920px; }
+    .case-company { flex: none; margin-top: 4px; padding: 8px 12px; background: var(--accent-soft); color: var(--accent); border-radius: 3px; font: 700 12px "SFMono-Regular", Consolas, monospace; }
+    .case-slide .slide-main { justify-content: center; }
+    .case-layout { display: grid; grid-template-columns: minmax(0,.91fr) minmax(0,1.09fr); gap: 30px; min-height: 0; }
+    .case-story { display: flex; flex-direction: column; gap: 24px; min-height: 0; align-self: center; }
+    .case-story .problem { border-top: 2px solid var(--ink); padding-top: 15px; }
+    .case-story .problem p { font-size: clamp(19px, 1.8vw, 26px); line-height: 1.32; letter-spacing: -.025em; margin: 0; max-width: 540px; }
+    .evidence { border-left: 4px solid var(--accent); padding: 6px 0 6px 17px; }
+    .evidence strong { display: block; font-size: clamp(21px, 2vw, 30px); line-height: 1.17; letter-spacing: -.035em; max-width: 540px; }
+    .evidence span { display: block; color: var(--muted); font-size: 13px; line-height: 1.43; margin-top: 8px; max-width: 540px; }
+    .case-system { display: flex; flex-direction: column; min-height: 0; gap: 16px; align-self: center; }
+    .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .flow-step { min-height: 126px; padding: 15px 12px; background: var(--surface); border: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+    .flow-step::after { content: "→"; position: absolute; top: 50%; right: -12px; transform: translateY(-50%); z-index: 2; color: var(--accent); background: var(--paper); font-size: 17px; padding: 0 2px; }
+    .flow-step:last-child::after { display: none; }
+    .flow-step .step-n { color: var(--accent); font: 700 11px "SFMono-Regular", Consolas, monospace; }
+    .flow-step strong { font-size: clamp(16px, 1.5vw, 22px); line-height: 1.2; letter-spacing: -.022em; }
+    .human-check { font-size: 14px; line-height: 1.4; color: var(--muted); border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
+    .human-check b { color: var(--ink); }
+    .transfer { background: var(--accent-soft); border-top: 3px solid var(--accent); padding: 18px 20px; }
+    .transfer p { font-size: clamp(18px, 1.65vw, 24px); line-height: 1.3; margin: 0; letter-spacing: -.02em; }
+
+    .detail-intro { max-width: 780px; color: var(--muted); font-size: 20px; line-height: 1.4; }
+    .detail-grid { flex: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, 1fr); gap: 13px; margin-top: 22px; }
+    .detail-card { border: 1px solid var(--rule); background: rgba(255,255,255,.78); padding: 22px 25px; display: flex; flex-direction: column; justify-content: space-between; }
+    .detail-card .small-label { color: var(--accent); }
+    .detail-card p { color: var(--muted); font-size: 16px; line-height: 1.35; margin: 0; }
+    .detail-status { display: inline-flex; width: fit-content; color: var(--accent); border: 1px solid var(--accent); padding: 7px 10px; font: 700 11px "SFMono-Regular", Consolas, monospace; text-transform: uppercase; letter-spacing: .08em; }
+    .avito-title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; }
+    .avito-title-row h2 { margin: 0; }
+    .avito-title-row p { margin: 0 0 3px; max-width: 390px; text-align: right; color: var(--muted); font-size: 16px; line-height: 1.3; }
+    .avito-table { display: flex; flex-direction: column; flex: 1; min-height: 0; margin-top: 19px; }
+    .avito-head, .avito-row { display: grid; grid-template-columns: minmax(170px, .58fr) minmax(0, 1fr) minmax(0, 1.08fr) 150px; column-gap: 16px; align-items: center; }
+    .avito-head { flex: none; padding: 0 16px 10px; border-bottom: 2px solid var(--ink); color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font: 700 11px "SFMono-Regular", Consolas, monospace; }
+    .avito-row { flex: 1 0 auto; min-height: 0; padding: 10px 16px; border-bottom: 1px solid var(--rule); background: rgba(255,255,255,.38); }
+    .avito-row:nth-child(odd) { background: rgba(255,255,255,.76); }
+    .avito-name { display: flex; align-items: flex-start; gap: 9px; font-size: 16px; line-height: 1.16; letter-spacing: -.025em; }
+    .avito-name em { flex: none; color: var(--accent); font: 700 11px "SFMono-Regular", Consolas, monospace; font-style: normal; padding-top: 3px; }
+    .avito-cell { font-size: 15px; line-height: 1.28; font-weight: 400; color: var(--ink); }
+    .avito-cell.ai { font-weight: 400; }
+    .avito-cell .mobile-label { display: none; }
+    .prompt-open { width: 100%; min-height: 38px; border: 1px solid var(--accent); border-radius: 3px; background: var(--accent-soft); color: var(--accent); padding: 6px 9px; text-align: left; font-size: 12px; line-height: 1.2; font-weight: 700; cursor: pointer; }
+    .prompt-open:hover { background: #d5e3ff; }
+    .prompt-open:focus-visible { outline-offset: 2px; }
+    .prompt-dialog { width: min(700px, calc(100vw - 32px)); max-height: min(82svh, 760px); padding: 0; border: 1px solid var(--rule); border-radius: 9px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 90px #101d3166; }
+    .prompt-dialog::backdrop { background: rgba(9, 25, 42, .64); }
+    .prompt-dialog-inner { padding: 28px 32px 30px; }
+    .prompt-dialog-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+    .prompt-dialog-head h3 { margin: 5px 0 0; font-size: 27px; line-height: 1.14; }
+    .prompt-close { flex: none; width: 34px; height: 34px; border: 1px solid var(--rule); border-radius: 4px; background: #fff; color: var(--ink); cursor: pointer; font-size: 24px; line-height: 1; }
+    .prompt-context { margin: 17px 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .prompt-text { max-height: 48svh; overflow: auto; margin: 0; padding: 20px 22px; border-left: 4px solid var(--accent); background: #eef3ff; white-space: pre-wrap; font: 15px/1.55 "Avenir Next", "Helvetica Neue", Arial, sans-serif; }
+    .prompt-source { display: inline-block; margin-top: 17px; color: var(--accent); font-size: 12px; }
+    .alfa-detail .avito-table { margin-top: 14px; }
+    .alfa-detail .avito-row { padding-top: 12px; padding-bottom: 12px; }
+    .alfa-recommendations { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 15px; }
+    .alfa-recommendation { border-top: 2px solid var(--accent); padding: 9px 11px 2px 0; }
+    .alfa-recommendation strong { display: block; font-size: 14px; line-height: 1.2; margin-bottom: 5px; }
+    .alfa-recommendation span { display: block; color: var(--muted); font-size: 13px; line-height: 1.3; }
+    .story-table .avito-head, .story-table .avito-row { grid-template-columns: minmax(165px, .62fr) minmax(0, 1fr) minmax(0, 1.28fr); column-gap: 22px; }
+    .story-table .avito-row { padding-top: 16px; padding-bottom: 16px; }
+    .story-brief { flex: none; display: grid; grid-template-columns: 1.15fr .85fr; gap: 12px; margin-top: 15px; }
+    .story-brief-item { border-top: 2px solid var(--accent); padding-top: 10px; }
+    .story-brief-item:last-child { border-color: var(--ink); }
+    .story-brief-item .small-label { margin-bottom: 5px; }
+    .story-brief-item p { margin: 0; font-size: 14px; line-height: 1.32; }
+
+    .decision .slide-main { gap: 16px; }
+    .priority-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 24px; min-height: 0; }
+    .priority-row { display: grid; grid-template-columns: 34px 1fr; gap: 10px; padding: 16px 0; border-top: 1px solid var(--rule); }
+    .priority-row .n { color: var(--accent); font: 700 12px "SFMono-Regular", Consolas, monospace; }
+    .priority-row strong { display: block; font-size: 19px; letter-spacing: -.035em; margin-bottom: 6px; }
+    .priority-row small { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .closing { justify-content: center; }
+    .closing h2 { font-size: clamp(50px, 5vw, 76px); max-width: 1100px; }
+    .closing .lede { max-width: 990px; }
+    .conclusion-rail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 55px; }
+    .conclusion-point { border-top: 2px solid var(--accent); padding-top: 19px; }
+    .conclusion-point b { display: block; font-size: 19px; margin-bottom: 9px; }
+    .conclusion-point span { display: block; color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+    .notes-panel[hidden] { display: none; }
+    .notes-panel { position: fixed; z-index: 30; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(880px, calc(100vw - 36px)); max-height: 42svh; overflow: auto; background: #fff; border: 1px solid #c6d0da; box-shadow: 0 14px 40px #13293c33; padding: 16px 20px; color: #283d4d; font-size: 14px; line-height: 1.45; }
+    .notes-panel strong { color: var(--accent); }
+
+    @media (min-width: 1060px) and (max-height: 800px) {
+      .slide-main { padding-top: 23px; padding-bottom: 20px; }
+      .avito-table { margin-top: 12px; }
+      .avito-row { padding-top: 8px; padding-bottom: 8px; }
+      .avito-cell { font-size: 15px; line-height: 1.22; }
+      .avito-name { font-size: 16px; }
+    }
+    @media (min-width: 1060px) and (max-height: 690px) {
+      .slide:has(.avito-detail) .slide-header { min-height: 44px; }
+      .slide:has(.avito-detail) .slide-footer { min-height: 40px; }
+      .slide:has(.avito-detail) .slide-main { padding-top: 13px; padding-bottom: 10px; }
+      .avito-title-row h2 { font-size: 35px; }
+      .avito-title-row p { font-size: 12px; max-width: 310px; }
+      .avito-table { margin-top: 7px; }
+      .avito-head { padding-bottom: 5px; font-size: 10px; }
+      .avito-row { padding-top: 5px; padding-bottom: 5px; }
+      .avito-name { font-size: 14px; }
+      .avito-cell { font-size: 12px; line-height: 1.18; }
+      .avito-head, .avito-row { grid-template-columns: minmax(130px, .55fr) minmax(0, 1fr) minmax(0, 1.08fr) 111px; column-gap: 9px; }
+      .avito-name { font-size: 12px; }
+      .prompt-open { min-height: 31px; padding: 4px 6px; font-size: 10px; }
+      .alfa-detail .avito-table { margin-top: 6px; }
+      .alfa-detail .avito-row { padding-top: 5px; padding-bottom: 5px; }
+      .alfa-recommendations { margin-top: 7px; gap: 7px; }
+      .alfa-recommendation { padding-top: 5px; }
+      .alfa-recommendation strong { font-size: 11px; margin-bottom: 3px; }
+      .alfa-recommendation span { font-size: 10px; line-height: 1.2; }
+      .story-table .avito-head, .story-table .avito-row { grid-template-columns: minmax(135px, .6fr) minmax(0, 1fr) minmax(0, 1.25fr); column-gap: 12px; }
+      .story-table .avito-row { padding-top: 7px; padding-bottom: 7px; }
+      .story-brief { margin-top: 7px; }
+      .story-brief-item { padding-top: 5px; }
+      .story-brief-item .small-label { margin-bottom: 2px; font-size: 9px; }
+      .story-brief-item p { font-size: 10px; line-height: 1.2; }
+    }
+
+    @media (max-width: 1050px) {
+      .slide { aspect-ratio: auto; width: 100%; height: 100svh; min-height: 0; overflow: auto; }
+      .slide-main { padding: 26px 30px; }
+      .slide-header, .slide-footer { padding-left: 30px; padding-right: 30px; }
+      h1 { font-size: clamp(48px, 7vw, 72px); }
+      h2 { font-size: clamp(36px, 5vw, 52px); }
+      .case-layout { gap: 18px; }
+      .flow-step { min-height: 120px; }
+      .avito-head { display: none; }
+      .avito-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
+      .story-table .avito-row { display: grid; grid-template-columns: 1fr 1fr; }
+      .avito-name { grid-column: 1 / -1; }
+      .prompt-open { grid-column: 1 / -1; max-width: 220px; }
+      .avito-cell .mobile-label { display: block; margin-bottom: 4px; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; font: 700 10px "SFMono-Regular", Consolas, monospace; }
+    }
+    @media (max-width: 760px) {
+      .slide { width: 100%; height: 100svh; overflow: auto; }
+      .slide-header { min-height: 48px; padding: 0 18px; }
+      .slide-main { flex: none; padding: 22px 18px; }
+      .case-slide .slide-main { justify-content: flex-start; }
+      .slide-footer { min-height: 50px; padding: 0 18px; }
+      h1 { font-size: clamp(40px, 12vw, 66px); }
+      h2 { font-size: clamp(33px, 9vw, 50px); }
+      .lede { font-size: 19px; }
+      .cover-bottom { grid-template-columns: 1fr; }
+      .mini-sequence { grid-template-columns: repeat(3, 1fr); }
+      .map-head { display: block; }
+      .map-head p { margin-top: 12px; }
+      .process-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, minmax(114px,1fr)); }
+      .process-item strong { font-size: 16px; }
+      .case-title-row { display: block; }
+      .case-company { display: inline-flex; margin-bottom: 15px; }
+      .case-layout { display: flex; flex-direction: column; min-height: auto; }
+      .case-story { gap: 13px; min-height: auto; align-self: stretch; }
+      .evidence { margin: 0; }
+      .case-system { flex-direction: column !important; min-height: auto; align-self: stretch; }
+      .flow-step { min-height: 106px; }
+      .transfer { margin: 0; }
+      .priority-list { grid-template-columns: 1fr; }
+      .priority-row { padding: 9px 0; }
+      .priority-row strong { font-size: 17px; }
+      .conclusion-rail { grid-template-columns: 1fr; margin-top: 22px; gap: 6px; }
+      .detail-grid { grid-template-columns: 1fr; grid-template-rows: none; }
+      .detail-card { min-height: 120px; }
+      .avito-title-row { display: block; }
+      .avito-title-row p { display: none; }
+      .avito-table { margin-top: 20px; gap: 9px; }
+      .avito-head { display: none; }
+      .avito-row { display: block; padding: 15px 16px; border: 1px solid var(--rule); }
+      .story-table .avito-row { display: block; }
+      .avito-name { margin-bottom: 13px; }
+      .avito-cell { font-size: 14px; margin-top: 9px; }
+      .avito-cell .mobile-label { display: block; margin-bottom: 4px; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; font: 700 10px "SFMono-Regular", Consolas, monospace; }
+      .prompt-open { margin-top: 13px; max-width: none; }
+      .story-brief { grid-template-columns: 1fr; }
+      .alfa-recommendations { grid-template-columns: 1fr; gap: 8px; }
+      .prompt-dialog-inner { padding: 20px 18px; }
+      .prompt-dialog-head h3 { font-size: 21px; }
+      .prompt-text { font-size: 14px; }
+    }
+    @media (max-width: 430px) {
+      .flow { grid-template-columns: 1fr; }
+      .flow-step { min-height: 62px; flex-direction: row; gap: 12px; align-items: center; }
+      .flow-step strong { margin-left: auto; text-align: right; }
+      .flow-step::after { content: "↓"; top: auto; bottom: -14px; right: 50%; transform: translateX(50%); }
+      .process-grid { grid-template-columns: 1fr; grid-template-rows: repeat(6, minmax(82px, auto)); }
+      .process-item { padding: 10px 13px; flex-direction: row; align-items: center; gap: 10px; }
+      .process-item .foot, .process-item::after { display: none; }
+      .process-item strong { flex: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <main id="slide" class="slide" aria-live="polite"></main>
+    <aside id="notes" class="notes-panel" hidden></aside>
+  </div>
+  <dialog id="promptDialog" class="prompt-dialog" aria-labelledby="promptTitle">
+    <div class="prompt-dialog-inner">
+      <div class="prompt-dialog-head"><div><span class="small-label">Адаптированный пример по статье</span><h3 id="promptTitle"></h3></div><button id="promptClose" class="prompt-close" type="button" aria-label="Закрыть">×</button></div>
+      <p class="prompt-context">Формулировка переработана для презентации. Подставьте свои данные и проверьте результат перед использованием.</p>
+      <pre id="promptText" class="prompt-text"></pre>
+      <a id="promptSource" class="prompt-source" href="https://vc.ru/avito_product_tech/2144243-5-zadach-ux-issledovateley-avito-s-ispolzovaniem-neyrosetey" target="_blank" rel="noopener noreferrer">Исходная статья Авито ↗</a>
+    </div>
+  </dialog>
+  <script>
+    const caseSlides = [
+      {
+        section: '01 / Исследование', title: 'Подготовка исследования', company: 'Авито UXLab',
+        problem: 'Из брифа, гипотез и разрозненных материалов нужно быстро собрать план исследования и вопросы без перекосов.',
+        flow: ['Бриф, аудитория, шаблон', 'Варианты метода и гипотез', 'Черновик плана и гайда'],
+        evidence: 'Больше направлений для проверки',
+        caveat: 'Компания описала процесс, но не опубликовала измерение скорости. Метод и формулировки проверяет исследователь.',
+        ours: 'Один бриф по CRM → два варианта гайда → сравнение нейтральности и полноты вопросов.',
+        also: 'Также: Альфа-Банк · ВТБ · Microsoft',
+        source: 'Авито Product & Tech, 2025', url: 'https://vc.ru/avito_product_tech/2144243-5-zadach-ux-issledovateley-avito-s-ispolzovaniem-neyrosetey',
+        notes: 'Расскажите, что в Авито UXLab модель получает бриф, шаблон, сведения об аудитории и задаче. Она предлагает методологию и гипотезы, а исследователь отбирает пригодное. По соседству с этим процессом команда применяет AI для воркшопов и desk research. Не приписывайте кейсу измеренную экономию времени.'
+      },
+      {
+        section: '02 / Исследование', title: 'Транскрибация интервью', company: 'Альфа-Банк ARC',
+        problem: 'При 460 глубинных интервью по CRM SFA ручная расшифровка превращается в отдельный большой этап работы.',
+        flow: ['Запись интервью', 'Whisper + LLM через портал', 'Текст и первичная структура'],
+        evidence: '≈690 часов по расчёту команды',
+        caveat: 'Оценка автора: один час разговора обрабатывается за 15 минут вместо 1,5–2 часов вручную. Независимой проверки не было.',
+        ours: 'Расшифровать несколько интервью по CRM, сверить реплики и сохранить точные цитаты с привязкой к записи.',
+        also: 'Также: Авито · Microsoft',
+        source: 'Альфа-Банк, команда ARC, 2025', url: 'https://habr.com/ru/companies/alfa/articles/917114/',
+        notes: 'Важно произнести оговорку: 690 часов — расчёт исследовательской команды на её объёме, а не универсальная экономия. Для наших интервью сначала нужен разрешённый контур обработки записей. Человеческая проверка исправляет речь, роли и смысл цитат.'
+      },
+      {
+        section: '03 / Исследование', title: 'Синтез обратной связи', company: 'Figma Research',
+        problem: 'В большом массиве интервью легко потерять повторяющиеся темы и оторвать вывод от того, что участник сказал на самом деле.',
+        flow: ['Транскрипты интервью', 'Кодирование и группировка', 'Темы → исходные реплики'],
+        evidence: '639 интервью в одном исследовании',
+        caveat: 'Это масштаб работы Figma, а не метрика точности AI. Интерпретацию тем и противоречий оставили исследователям.',
+        ours: 'Объединить интервью и обращения о таблицах, фильтрах и дашбордах; каждый вывод связать с первоисточником.',
+        also: 'Также: Авито · Альфа-Банк · Microsoft',
+        source: 'Figma Research, 2026', url: 'https://www.figma.com/blog/measuring-the-impact-of-ai/',
+        notes: 'Figma провела 639 AI-модерируемых интервью и построила собственный инструмент тематического анализа. Из темы можно перейти к конкретной реплике и транскрипту. Главная идея для слайда — проверяемость вывода, а не впечатляющее число интервью.'
+      },
+      {
+        section: '04 / Знания', title: 'Поиск по накопленным знаниям', company: 'Microsoft Core AI',
+        problem: 'После завершения исследования выводы остаются в отчётах. Дизайнеру, PM и инженеру нужны разные ответы из одних и тех же данных.',
+        flow: ['Отчёт, интервью, контекст', 'Агент, опирающийся на исследование', 'Ответ с переходом к данным'],
+        evidence: 'Исследование остаётся доступным после отчёта',
+        caveat: 'Команда описала рабочий процесс, но не опубликовала замер экономии времени. Интерпретацию сохраняет исследователь.',
+        ours: 'Дать поиск по прошлым исследованиям CRM с указанием документа, цитаты и даты исследования.',
+        also: 'Также: Figma · Авито',
+        source: 'Microsoft Design / Core AI, 2026', url: 'https://microsoft.design/articles/rebuilding-research-from-the-ground-up/',
+        notes: 'В статье Microsoft Design старшая UX-исследовательница Sara Chizari из Core AI описывает агента, который позволяет PM, дизайнеру и инженеру задавать разные вопросы по одному исследованию. Она сначала формирует собственную интерпретацию, затем использует AI для проверки противоположных свидетельств. Chris Gunderson описывает, как упаковывает боли, роли и Jobs to be Done в читаемые людьми и AI файлы. Это реальный внутренний кейс Microsoft, в отличие от ранее выбранного интервью с приглашённой исследовательницей GSK.'
+      },
+      {
+        section: '05 / Решение', title: 'Сценарии и пограничные случаи', company: 'Яндекс · Алиса',
+        problem: 'Основной сценарий обычно проработан, а редкие права, ошибки и состояния проявляются поздно.',
+        flow: ['Задача и ограничения', 'Варианты сценариев / edge cases', 'Список для отбора и проверки'],
+        evidence: 'Более широкий список случаев до макета',
+        caveat: 'Это рассказ одного старшего дизайнера; опубликованной метрики скорости или качества нет.',
+        ours: 'Проверить роли, пустые таблицы, фильтры, долгую загрузку, массовые действия и ошибки сохранения.',
+        also: 'Также: ВТБ · Microsoft Core AI',
+        source: 'Интервью дизайнера Яндекса, 2026', url: 'https://habr.com/ru/articles/1040206/',
+        notes: 'По словам дизайнера команды Алисы и устройств, GPT и Алиса AI помогают продумывать сценарии и corner cases, после чего идеи проверяют в интерактивных прототипах. Сделайте переход к нашим CRM: несколько ролей, разрешения, большие таблицы, ошибки, пустые данные.'
+      },
+      {
+        section: '06 / Решение', title: 'Интерактивные прототипы', company: 'DoorDash Design',
+        problem: 'Статичный макет не показывает, как ведут себя сложные действия, и оставляет слишком много догадок при обсуждении.',
+        flow: ['Макет и сценарий', 'AI + общие шаблоны кода', 'Работающий прототип для ревью'],
+        evidence: 'Обсуждение поведения до реализации',
+        caveat: 'Команда описала быстрые отдельные эпизоды, но не среднюю экономию времени. Прототип не равен готовому к релизу коду.',
+        ours: 'Фильтры → выбор строк → массовое действие → подтверждение → ошибка или успех: проверить до handoff.',
+        also: 'Также: Figma · Microsoft Core AI',
+        source: 'DoorDash Design, 2026', url: 'https://medium.com/design-doordash/two-teams-one-shift-how-ai-is-rewiring-our-product-design-process-43f33eef24ae',
+        notes: 'DoorDash использует Figma Make, общую библиотеку кодовых прототипов Starter Dough и нативный код в зависимости от задачи. Важна командная привычка смотреть работающий сценарий на регулярных показах. Можно устно добавить RCT Figma Make: общий выигрыш 20% на трёх задачах, а у дизайнеров значимый эффект был на сложной задаче.'
+      }
+    ];
+
+    const avitoPromptExamples = [
+      {
+        title: 'Разметка открытых ответов',
+        text: `Ты работаешь с результатами UX-опроса. Размечай каждый ответ отдельно по смыслу.
+
+Список допустимых тегов: {{список тегов}}.
+
+Если ответ говорит об отсутствии проблемы, поставь тег «Нейтральный отзыв». Если человек доволен, используй «Позитив». Когда подходящего тега нет, предложи новый короткий тег.
+
+Верни только один или несколько тегов через запятую, без объяснения.
+
+Ответ участника: {{текст ответа}}`
+      },
+      {
+        title: 'Саммари интервью',
+        text: `Проанализируй транскрипт интервью целиком. Выдели десять главных вопросов, на которые отвечает участник.
+
+Для каждого вопроса дай короткий ответ в одном-двух предложениях. Сохраняй формулировки и смысл исходного разговора, охвати все темы и не добавляй выводов, которых нет в тексте.
+
+Транскрипт: {{текст интервью}}`
+      },
+      {
+        title: 'Гипотезы для исследования',
+        text: `Ты продуктовый исследователь. Пользователи быстро уходят из карточки вакансии.
+
+Предложи пять возможных гипотез, объясняющих это поведение. Для каждой укажи способ проверки и отметь, какие данные потребуются: качественные, количественные или оба типа.
+
+Не выдавай гипотезы за подтверждённые факты.`
+      },
+      {
+        title: 'План воркшопа',
+        text: `Ты фасилитатор команды сложного B2B-продукта. Нужен воркшоп, который поможет найти и приоритизировать ценности продукта, способные перевесить трудности его подключения.
+
+Входные материалы: аналитика использования, причины обращений в поддержку и результаты JTBD-исследования.
+
+Предложи этапы встречи, задания для участников, ожидаемый результат каждого этапа и способ выбора приоритетных решений.`
+      },
+      {
+        title: 'Деск-ресёрч рынка труда',
+        text: `Подготовь краткий обзор тенденций поиска работы среди соискателей 25–34 лет в странах ЕС.
+
+Опирайся на англоязычные источники. Представь выводы списком, добавь короткое пояснение и ссылку на источник для каждого пункта. Отдели подтверждённые наблюдения от предположений.`
+      }
+    ];
+
+    const alfaPromptExamples = [
+      {
+        title: 'Транскрипт → саммари интервью',
+        text: `Ты помогаешь UX-исследователю проанализировать транскрипт интервью о CRM.
+
+Цель исследования: {{цель}}. Гипотезы: {{гипотезы}}. Вопросы исследования: {{вопросы}}.
+
+Выдели темы, проблемы, наблюдаемые сценарии и цитаты, которые отвечают на вопросы исследования. Для каждого вывода укажи фрагмент транскрипта. Отдельно покажи противоречия и темы, по которым данных недостаточно. Не добавляй факты от себя.
+
+Транскрипт: {{текст интервью}}`
+      },
+      {
+        title: 'Гайд без наводящих вопросов',
+        text: `Подготовь черновик полуструктурированного интервью по CRM.
+
+Цель: понять, как менеджер работает с заявкой перед звонком клиенту.
+Аудитория: {{роль участника}}.
+Черновой вопрос: «Какие поля формы вызывают затруднения?»
+
+Замени наводящий вопрос нейтральным: попроси вспомнить последнюю заявку, рассказать, на что человек посмотрел сначала и как искал нужные сведения. Добавь 2–3 уточняющих вопроса о конкретных действиях. Вопросы об улучшениях оставь на конец.
+
+Пометь формулировки, которые всё ещё подсказывают ответ. Гайд проверит исследователь.`
+      },
+      {
+        title: 'Из идеи → проверяемая гипотеза',
+        text: `Помоги превратить сырую идею продуктовой команды в проверяемую UX-гипотезу.
+
+Идея: «Сотрудники понимают, из чего сложилась их премия, когда смотрят дашборд».
+
+Переформулируй это как проверку: сможет ли сотрудник после просмотра дашборда назвать три главных фактора расчёта премии. Предложи метод с 8–12 интервью и критерий, при котором гипотеза не подтвердится. Если контекста не хватает, сначала задай вопросы.
+
+Не считай исходную идею доказанным фактом.`
+      }
+    ];
+
+    const promptCollections = {
+      avito: { examples: avitoPromptExamples, url: caseSlides[0].url, label: 'Исходная статья Авито ↗' },
+      alfa: { examples: alfaPromptExamples, url: caseSlides[1].url, label: 'Исходная статья Альфа-Банка ↗' }
+    };
+
+    const remainingDetails = {
+      2: {
+        subtitle: '639 интервью: от ответа человека до проверяемого вывода',
+        rows: [
+          ['Интервью', 'Спросить дизайнеров, разработчиков и PM, как ИИ изменил их работу.', 'ИИ ведёт разговор и задаёт уточнения. Figma получила 639 интервью.'],
+          ['Темы', 'Разобрать 639 расшифровок — около 2 млн слов.', 'Свой инструмент Figma поставил 40 701 смысловую метку и нашёл 553 темы, повторившиеся у разных людей.'],
+          ['Доказательства', 'Проверить тему «ИИ ускорил работу, но вырос страх за качество».', 'В инструменте видно 47 участников, которые её упомянули; можно открыть их слова и полную расшифровку.']
+        ],
+        takeaway: 'В CRM: тема «непонятны фильтры» → список интервью → точные цитаты.',
+        limit: '639 — число интервью, а не оценка точности ИИ.',
+        notes: 'Figma провела 639 интервью с ИИ-модератором. Получилось около двух миллионов слов. Собственный инструмент поставил 40 701 смысловую метку и нашёл 553 темы, которые встречались у нескольких людей. Покажите цепочку на конкретном примере: тема об ускорении работы и страхе за качество → 47 участников → точная реплика → интервью целиком. Исследователь задавал правила анализа и проверял выводы. Число интервью не говорит о точности ИИ.'
+      },
+      3: {
+        subtitle: 'Один отчёт — разные вопросы от PM, дизайнера и инженера',
+        rows: [
+          ['Сохранить знания', 'Записать роли пользователей, частые боли и задачи в общие файлы.', 'Chris Gunderson хранит эти сведения в Markdown, чтобы их читали коллеги и ИИ.'],
+          ['Задать вопрос', 'PM спрашивает, куда вложиться; дизайнер — чего людям не хватает; инженер — об ограничениях.', 'Агент Sara Chizari отвечает по одному завершённому исследованию и показывает подходящие данные.'],
+          ['Проверить ответ', 'Спросить: «Какие интервью противоречат нашему выводу?»', 'Sara сначала пишет свой вывод, а потом просит ИИ найти контрпримеры в материалах.']
+        ],
+        takeaway: 'В CRM: спросить архив «почему меняли фильтры?» и открыть исходное исследование.',
+        limit: 'В статье нет замера, насколько быстрее стали находить ответы.',
+        notes: 'В Microsoft Core AI Sara Chizari сделала агента по одному завершённому исследованию. PM спрашивает о направлениях для вложений, дизайнер — о неудовлетворённых потребностях, инженер — об ограничениях. Chris Gunderson записывает роли, задачи и частые проблемы пользователей в Markdown-файлы. Sara сначала делает собственный вывод, затем просит ИИ найти данные против него. Для нашей команды это пример поиска по архиву с переходом к исходному документу; сам Microsoft кейс не измеряет скорость поиска.'
+      },
+      4: {
+        subtitle: 'GPT → Cursor → Figma Make',
+        rows: [
+          ['Сценарий', 'Передать GPT задачу пользователя и черновой путь по экрану.', 'По словам дизайнера Яндекса, GPT предлагает другие ходы сценария.'],
+          ['Редкие случаи', 'Спросить GPT: «Что может пойти не по основному пути?»', 'Модель предлагает редкие случаи; дизайнер решает, какие относятся к продукту.'],
+          ['Прототип', 'Проверить выбранный путь кликами, анимацией и сменой экранов.', 'В Cursor дизайнер собирает интерактивный черновик; в Figma Make добавляет анимацию.']
+        ],
+        takeaway: 'В CRM: нет прав → пустая таблица → ошибка массового действия. Проверить все три состояния.',
+        limit: 'Это рассказ одного дизайнера. Пример экрана и числа он не приводит.',
+        notes: 'Дмитрий Богдашкин описал личный рабочий порядок: GPT для сценариев и редких случаев, Cursor для интерактивного прототипа, Figma Make для анимации. Конкретный продуктовый экран в интервью не показан. Поэтому пример с правами, пустой таблицей и ошибкой массового действия — наш вариант для CRM, а не кейс Яндекса. Чисел об ускорении у дизайнера нет.'
+      },
+      5: {
+        subtitle: 'Черновик в Make → прототип с данными → код продукта',
+        rows: [
+          ['Быстрый черновик', 'Показать вариант интерфейса, не собирая готовый продукт.', 'Figma Make даёт кликабельный черновик для обсуждения идеи.'],
+          ['Прототип с данными', 'Основное приложение: проверить новую главную страницу на данных.', 'В Starter Dough дизайнер собирает экран, коллега добавляет сегменты, инженер подключает данные.'],
+          ['Код продукта', 'Новое AI-приложение: проверить онбординг прямо в коде.', 'Дизайнер работает вместе с инженером и пробует реальные переходы.']
+        ],
+        takeaway: 'В CRM: собрать «фильтр → выбор строк → массовое действие» и дать коллегам прокликать.',
+        limit: 'Сразу решить, это одноразовый черновик или код, который будут развивать.',
+        notes: 'DoorDash описывает два продукта. В основном приложении команда сделала Starter Dough — шаблоны прототипов с возможностью подключить данные. Для главной страницы дизайнер менял интерфейс, коллега добавлял сегменты, инженер подключал реальные данные. В новом приложении онбординг делали сразу в коде вместе с инженером. Команда отдельно говорит об опасной середине: прототип выглядит готовым, но код нельзя развивать. Для нашего показа достаточно рабочего сценария массового действия; готовый релизный код пока не нужен.'
+      }
+    };
+
+    const deck = [
+      { kind: 'cover', title: 'AI в работе продуктового дизайна' },
+      { kind: 'map', title: 'Шесть процессов для нашей команды' },
+      ...caseSlides.flatMap((item, index) => [
+        { kind: 'case', title: item.title, item, index },
+        { kind: 'detail', title: `Подробнее: ${item.company}`, item, index }
+      ]),
+      { kind: 'decision', title: 'Что проверить у нас' },
+      { kind: 'close', title: 'Общий вывод' }
+    ];
+    let slideIndex = Math.max(0, Math.min(deck.length - 1, (Number((location.hash.match(/slide-(\d+)/) || [])[1]) || 1) - 1));
+    let notesOpen = false;
+
+    const pad = n => String(n).padStart(2, '0');
+    const source = (label, url) => url ? `<a class="source-link" href="${url}" target="_blank" rel="noopener noreferrer">Источник: ${label} ↗</a>` : label;
+    const chrome = (section, body, footer = '', className = '') => `<div class="slide-header"><span class="series">AI / DESIGN WORKFLOWS</span><span class="section-name">${section}</span></div><div class="slide-main ${className}">${body}</div><div class="slide-footer"><span>${footer}</span><span class="spacer"></span><span class="slide-index">${pad(slideIndex + 1)} / ${deck.length}</span></div>`;
+
+    function renderCover() {
+      return chrome('Обзор рынка / 2026', `<div class="cover-top"><span class="badge">ПРОДУКТОВАЯ КОМАНДА</span><span class="badge">CRM · ДАШБОРДЫ · ТАБЛИЦЫ</span></div><div><h1>AI в работе<br><span class="accent-text">продуктового дизайна</span></h1><p class="lede">Что делают команды на российском и зарубежном рынках — и какие процессы стоит проверить у нас.</p></div><div class="cover-bottom"><p>Шесть прикладных задач.<br>Шесть кейсов других команд.<br>Один разговор о наших пилотах.</p><div class="mini-sequence">${['План','Текст','Синтез','Поиск','Сценарии','Прототип'].map((x,i)=>`<span><em>${pad(i+1)}</em>${x}</span>`).join('')}</div></div>`, '', 'cover');
+    }
+    function renderMap() {
+      const labels = [
+        ['Подготовка исследования','Бриф → план'], ['Транскрибация интервью','Запись → текст'],
+        ['Синтез обратной связи','Данные → темы'], ['Поиск знаний','Архив → ответ'],
+        ['Сценарии и состояния','Задача → варианты'], ['Интерактивные прототипы','Макет → поведение']
+      ];
+      return chrome('Карта процессов', `<p class="eyebrow">Фокус команды</p><div class="map-head"><h2>Шесть процессов близки нашей работе</h2><p>У каждого есть понятный вход, результат и человек, который его проверяет.</p></div><div class="process-grid">${labels.map(([title, foot],i)=>`<div class="process-item"><span class="num">${pad(i+1)}</span><strong>${title}</strong><span class="foot">${foot}</span></div>`).join('')}</div>`, 'Публичные практики компаний · не рейтинг рынка', 'map-slide');
+    }
+    function renderCase(item, i) {
+      const flow = item.flow.map((x, n)=>`<div class="flow-step"><span class="step-n">${pad(n+1)} / ${['Вход','AI','Выход'][n]}</span><strong>${x}</strong></div>`).join('');
+      return chrome(item.section, `<div class="case-title-row"><div><p class="eyebrow">Кейс ${pad(i+1)} / 06</p><h2>${item.title}</h2></div><span class="case-company">${item.company}</span></div><div class="case-layout"><div class="case-story"><div class="problem"><span class="small-label">Проблема</span><p>${item.problem}</p></div><div class="evidence"><span class="small-label">Что меняется</span><strong>${item.evidence}</strong><span>${item.caveat}</span></div></div><div class="case-system"><div class="flow">${flow}</div><div class="human-check"><b>Проверка человеком:</b> ${i===0?'метод, гипотезы и формулировки вопросов':i===1?'точность речи, роли участников и смысл цитат':i===2?'контекст, противоречия и достоверность тем':i===3?'актуальность и исходный документ':i===4?'реалистичность и приоритет сценариев':'данные, взаимодействие и качество кода'}.</div><div class="transfer"><span class="small-label">Как применить у нас</span><p>${item.ours}</p></div></div></div>`, `${source(item.source, item.url)} <span class="source-separator">·</span> ${item.also}`, 'case-slide');
+    }
+    function renderDetail(item, i) {
+      if (i === 0) return renderAvitoDetail(item);
+      if (i === 1) return renderAlfaDetail(item);
+      return renderRemainingDetail(item, i);
+    }
+    function renderRemainingDetail(item, i) {
+      const detail = remainingDetails[i];
+      const rows = detail.rows.map(([step, task, ai], n) => `<div class="avito-row"><strong class="avito-name"><em>${pad(n+1)}</em>${step}</strong><div class="avito-cell"><span class="mobile-label">Что делают</span>${task}</div><div class="avito-cell ai"><span class="mobile-label">Пример из кейса</span>${ai}</div></div>`).join('');
+      return chrome(`Разбор кейса / ${pad(i+1)}`, `<div class="avito-title-row"><h2>${item.company}</h2><p>${detail.subtitle}</p></div><div class="avito-table story-table"><div class="avito-head"><span>Шаг</span><span>Что делают</span><span>Пример из кейса</span></div>${rows}</div><div class="story-brief"><div class="story-brief-item"><span class="small-label">Как попробовать у нас</span><p>${detail.takeaway}</p></div><div class="story-brief-item"><span class="small-label">Что важно уточнить</span><p>${detail.limit}</p></div></div>`, source(item.source, item.url), 'avito-detail story-detail');
+    }
+    function renderAvitoDetail(item) {
+      const practices = [
+        ['Ответы CSAT/CES', 'Около 1 000 свободных ответов: что именно не понравилось людям?', 'Ставит каждому ответу тег, например «повторяющиеся вакансии», и считает частые причины.'],
+        ['Интервью', 'Есть запись интервью. Нужно понять, о чём рассказал участник.', 'Сначала делает текст, затем 10 вопросов по интервью с короткими ответами.'],
+        ['Гипотезы', 'Люди быстро уходят из карточки вакансии. Почему?', 'Предлагает 5 гипотез и способ проверить каждую: интервью, данные или оба метода.'],
+        ['Воркшоп', 'Как убедить B2B-клиента подключить сложный продукт?', 'Из аналитики, обращений в поддержку и JTBD собирает упражнения для встречи.'],
+        ['Поиск источников', 'Что изменилось в поиске работы у соискателей 25–34 лет в ЕС?', 'Ищет англоязычные источники и делает список выводов с короткими пояснениями.']
+      ];
+      const rows = practices.map(([title, task, ai], i) => `<div class="avito-row"><strong class="avito-name"><em>${pad(i+1)}</em>${title}</strong><div class="avito-cell"><span class="mobile-label">Задача</span>${task}</div><div class="avito-cell ai"><span class="mobile-label">Как помогает ИИ</span>${ai}</div><button class="prompt-open" type="button" data-prompt-company="avito" data-prompt-index="${i}" aria-label="Посмотреть пример промпта: ${title}">Посмотреть пример промпта ↗</button></div>`).join('');
+      return chrome('Разбор кейса / 01', `<div class="avito-title-row"><h2>Авито UXLab</h2><p>Пять задач из работы исследователей</p></div><div class="avito-table"><div class="avito-head"><span>Направление</span><span>Пример задачи</span><span>Что делает ИИ</span><span>Промпт</span></div>${rows}</div>`, source(item.source, item.url), 'avito-detail');
+    }
+    function renderAlfaDetail(item) {
+      const practices = [
+        ['460 интервью', 'Часовые записи исследований CRM SFA нужно перевести в текст и разобрать.', 'Whisper расшифровывает час за 15 минут; GPT делает черновик выводов, который проверяет исследователь.'],
+        ['Гайд интервью', 'Черновой вопрос о заявке: «Какие поля вызывают трудности?» — он подсказывает ответ.', 'GPT предлагает спросить о последней заявке: на что человек посмотрел первым и почему.'],
+        ['Дашборд премии', 'Сырая идея: «Сотрудники понимают, из чего сложилась их премия».', 'GPT предлагает проверить, смогут ли люди назвать 3 фактора расчёта; метод — 8–12 интервью.']
+      ];
+      const rows = practices.map(([title, task, ai], i) => `<div class="avito-row"><strong class="avito-name"><em>${pad(i+1)}</em>${title}</strong><div class="avito-cell"><span class="mobile-label">Задача</span>${task}</div><div class="avito-cell ai"><span class="mobile-label">Как помогает ИИ</span>${ai}</div><button class="prompt-open" type="button" data-prompt-company="alfa" data-prompt-index="${i}" aria-label="Посмотреть пример промпта: ${title}">Посмотреть пример промпта ↗</button></div>`).join('');
+      const recommendations = [
+        ['Итерировать', 'Уточняйте запрос, добавляйте контекст и делите сложную задачу на шаги.'],
+        ['Готовить вход', 'Чистая запись и понятные исходные данные улучшают результат.'],
+        ['Проверять', 'Сверяйте цитаты, гипотезы и выводы; решение остаётся за исследователем.']
+      ];
+      return chrome('Разбор кейса / 02', `<div class="avito-title-row"><h2>Альфа-Банк ARC</h2><p>Три примера из исследований CRM SFA</p></div><div class="avito-table"><div class="avito-head"><span>Направление</span><span>Пример задачи</span><span>Что делает ИИ</span><span>Промпт</span></div>${rows}</div><div class="alfa-recommendations">${recommendations.map(([title, body]) => `<div class="alfa-recommendation"><strong>${title}</strong><span>${body}</span></div>`).join('')}</div>`, source(item.source, item.url), 'avito-detail alfa-detail');
+    }
+    function renderDecision() {
+      const items = [
+        ['Подготовка исследования','План и вопросы по одному реальному брифу'],
+        ['Транскрибация','Время до сверенных цитат из интервью'],
+        ['Синтез','Темы с переходом к исходной реплике'],
+        ['Поиск знаний','Время найти актуальное решение и источник'],
+        ['Сценарии','Покрытие ролей, состояний и ошибок'],
+        ['Прототипы','Время до рабочего сценария и ревью']
+      ];
+      return chrome('Выбор пилота', `<p class="eyebrow">Перенос на нашу работу</p><h2>Проверим процессы на наших задачах</h2><div class="priority-list">${items.map(([name,desc],i)=>`<div class="priority-row"><span class="n">${pad(i+1)}</span><div><strong>${name}</strong><small>${desc}</small></div></div>`).join('')}</div>`, '', 'decision');
+    }
+    function renderClose() {
+      return chrome('Общий вывод', `<p class="eyebrow">Что показывают кейсы</p><h2>Нейросети не заменяют дизайнеров.<br><span class="accent-text">Они усиливают наши процессы.</span></h2><p class="lede">AI помогает быстрее собрать материал, увидеть больше вариантов и проверить рабочую гипотезу. Ответственность за постановку задачи, интерпретацию и решение остаётся у команды.</p><div class="conclusion-rail"><div class="conclusion-point"><b>Собрать</b><span>Подготовить исследование, расшифровать интервью, найти прежние знания.</span></div><div class="conclusion-point"><b>Осмыслить</b><span>Свести обратную связь, заметить противоречия и пограничные сценарии.</span></div><div class="conclusion-point"><b>Проверить</b><span>Показать поведение в прототипе и оценить качество результата вместе с людьми.</span></div></div>`, 'Итог · AI дополняет работу команды', 'closing');
+    }
+    function render() {
+      const el = document.getElementById('slide');
+      const current = deck[slideIndex];
+      el.className = `slide ${current.kind === 'map' ? 'map-slide' : current.kind === 'case' ? 'case-slide' : current.kind === 'detail' ? 'detail-slide' : current.kind === 'decision' ? 'decision' : ''}`;
+      el.innerHTML = current.kind === 'cover' ? renderCover() : current.kind === 'map' ? renderMap() : current.kind === 'case' ? renderCase(current.item, current.index) : current.kind === 'detail' ? renderDetail(current.item, current.index) : current.kind === 'decision' ? renderDecision() : renderClose();
+      el.scrollTop = 0;
+      const notes = current.kind === 'case' ? current.item.notes : current.kind === 'detail' && current.index === 0 ? 'Пять примеров Авито: примерно 1 000 свободных ответов получают теги и частоты; интервью превращается в текст и 10 вопросов с короткими ответами; для ухода из карточки вакансии ИИ предлагает 5 гипотез; для B2B-воркшопа собирает задания из аналитики, поддержки и JTBD; для обзора рынка труда ищет англоязычные источники. В статье нет замера времени для этих пяти задач. Промпты на слайде адаптированы.' : current.kind === 'detail' && current.index === 1 ? 'Альфа-Банк исследовал CRM SFA: 40 проектов и 460 интервью. По оценке команды, Whisper расшифровывает час записи за 15 минут вместо 1,5–2 часов ручной работы; GPT помогает сделать черновик выводов за 20–30 минут вместо примерно 2 часов. Второй пример: вместо вопроса «Какие поля вызывают трудности?» — разговор о последней заявке и том, куда человек посмотрел сначала. Третий: из идеи про дашборд премии получается проверка — сможет ли сотрудник назвать три фактора расчёта. Авторы предлагают 8–12 интервью. Рекомендации команды: уточнять запрос, подавать хорошие данные и проверять вывод.' : current.kind === 'detail' ? remainingDetails[current.index].notes : current.kind === 'cover' ? 'Откройте разговор через тип работы команды: CRM, дашборды, табличные интерфейсы. Цель — выбрать проверяемые процессы.' : current.kind === 'map' ? 'Выделите шесть основных процессов. Дизайн-систему и генерацию визуала упомяните коротко.' : current.kind === 'decision' ? 'Это список возможных пилотов; решение о приоритете команда примет отдельно.' : 'Подчеркните, что AI расширяет возможности команды на отдельных этапах. Качество и ответственность остаются за людьми.';
+      document.getElementById('notes').innerHTML = `<strong>Заметки выступающего · ${pad(slideIndex+1)}</strong><br>${notes}`;
+    }
+    function updateUrl() {
+      const url = new URL(location.href);
+      url.hash = `slide-${slideIndex+1}`;
+      history.replaceState(null, '', url);
+    }
+    function fitSlide() {
+      const slide = document.getElementById('slide');
+      const scale = Math.min(innerWidth / 1400, innerHeight / 787.5);
+      if (scale > 1 && innerWidth > 1050) {
+        slide.style.width = '1400px';
+        slide.style.height = '787.5px';
+        slide.style.transform = `scale(${scale})`;
+      } else {
+        slide.style.width = '';
+        slide.style.height = '';
+        slide.style.transform = '';
+      }
+    }
+    function setSlide(index) { slideIndex = Math.max(0, Math.min(deck.length - 1, index)); updateUrl(); render(); }
+    const promptDialog = document.getElementById('promptDialog');
+    let lastPromptButton = null;
+    document.getElementById('slide').addEventListener('click', e => {
+      const button = e.target.closest('[data-prompt-index]');
+      if (button) {
+        const collection = promptCollections[button.dataset.promptCompany];
+        const example = collection?.examples[Number(button.dataset.promptIndex)];
+        if (!example) return;
+        lastPromptButton = button;
+        document.getElementById('promptTitle').textContent = example.title;
+        document.getElementById('promptText').textContent = example.text;
+        const promptSource = document.getElementById('promptSource');
+        promptSource.href = collection.url;
+        promptSource.textContent = collection.label;
+        promptDialog.showModal();
+        return;
+      }
+      if (e.target.closest('a, button')) return;
+      const bounds = e.currentTarget.getBoundingClientRect();
+      if (e.clientX < bounds.left + bounds.width * .2) setSlide(slideIndex - 1);
+      else if (e.clientX > bounds.right - bounds.width * .2) setSlide(slideIndex + 1);
+    });
+    document.getElementById('promptClose').addEventListener('click', () => promptDialog.close());
+    promptDialog.addEventListener('click', e => { if (e.target === promptDialog) promptDialog.close(); });
+    promptDialog.addEventListener('close', () => { if (lastPromptButton?.isConnected) lastPromptButton.focus(); });
+    document.addEventListener('keydown', e => {
+      if (promptDialog.open) return;
+      const active = document.activeElement;
+      if (active && (['INPUT','TEXTAREA','SELECT'].includes(active.tagName) || active.isContentEditable)) return;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); setSlide(slideIndex+1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); setSlide(slideIndex-1); }
+      else if (e.key === 'Home') { e.preventDefault(); setSlide(0); }
+      else if (e.key === 'End') { e.preventDefault(); setSlide(deck.length - 1); }
+      else if (e.key.toLowerCase() === 'n') { notesOpen = !notesOpen; document.getElementById('notes').hidden = !notesOpen; }
+      else if (e.key.toLowerCase() === 'f') { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.(); }
+      else if (e.key === 'Escape') { notesOpen = false; document.getElementById('notes').hidden = true; }
+    });
+    addEventListener('resize', fitSlide);
+    addEventListener('fullscreenchange', fitSlide);
+    render();
+    fitSlide();
+  </script>
+</body>
+</html>
