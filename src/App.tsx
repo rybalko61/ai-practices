@@ -25,15 +25,17 @@ import {
 import "./App.css";
 
 type Status = "idea" | "testing" | "verified" | "archive";
-type ColumnId = "name" | "type" | "task" | "before" | "after" | "saving" | "status" | "video" | "author";
+type ColumnId = "name" | "task" | "before" | "after" | "saving" | "status" | "video" | "author";
 type Column = { id: ColumnId; label: string; width: number; min: number };
 type Practice = {
   name: string;
   type: string;
   task: string;
-  beforeSeconds: number;
-  afterSeconds: number;
-  batch: number;
+  beforeSeconds?: number;
+  afterSeconds?: number;
+  batch?: number;
+  beforeNote?: string;
+  afterNote?: string;
   status: Status;
   video: string;
   author: string;
@@ -48,8 +50,68 @@ const practices: Practice[] = [
     afterSeconds: 50,
     batch: 10,
     status: "testing",
+    video: "https://sbervideo.sberbank.ru/watch/AkLNoFA437mvCJuVZMB",
+    author: "Стас",
+  },
+  {
+    name: "Работа с внешним Pixso и Claude",
+    type: "—",
+    task: "Как создавать и править рабочие макеты с помощью внешних инструментов",
+    status: "idea",
+    video: "",
+    author: "Настя",
+  },
+  {
+    name: "Прототипирование с Codex",
+    type: "—",
+    task: "Ускорение создания сценариев для тестирования",
+    status: "idea",
     video: "",
     author: "Стас",
+  },
+  {
+    name: "Прототипирование с GigaCode (D2C Pixso)",
+    type: "—",
+    task: "Ускорение создания проволочных макетов",
+    status: "idea",
+    video: "",
+    author: "Лиза",
+  },
+  {
+    name: "Подготовка к тестированиям с ИИ",
+    type: "—",
+    task: "Гипотезы, вопросы и прототипы для тестирования",
+    status: "testing",
+    video: "",
+    author: "Настя",
+  },
+  {
+    name: "Исследования с GigaCode",
+    type: "—",
+    task: "Исследование рынка и UX-паттернов с помощью GigaCode",
+    status: "idea",
+    video: "https://sbervideo.sberbank.ru/watch/MnVpdl8kEbX9hPu6mD3",
+    author: "Настя",
+  },
+  {
+    name: "Пайплайн дизайн кейса",
+    type: "—",
+    task: "Исследования → мокапы → быстрые тесты → макеты с ИИ → прототипы для исследований и демонстрации решений → укомплектация кейса с результатами исследования и аргументацией решения",
+    status: "idea",
+    video: "https://sbervideo.sberbank.ru/watch/MnVpdl8kEbX9hPu6mD3",
+    author: "Настя",
+  },
+  {
+    name: "Генерация User Story из присланного БТ",
+    type: "Скилл",
+    task: "Агент перечитывает объёмные БТ и формирует по ним User Story по единому шаблону: не только сценарий действий пользователя, но и все относящиеся к нему ограничения (правила валидации полей, общие требования сервиса и другие ограничения, которые влияют на элементы). Готовые стори сразу передаются дизайнеру без ручной правки аналитиком.",
+    beforeSeconds: 2 * 60 * 60,
+    afterSeconds: 10 * 60,
+    beforeNote: "в среднем",
+    afterNote: "максимум",
+    status: "idea",
+    video: "",
+    author: "Лиза",
   },
 ];
 
@@ -77,7 +139,6 @@ const statusFilters: { value: "all" | Status; label: string }[] = [
 
 const columns: Column[] = [
   { id: "name", label: "Название", width: 300, min: 190 },
-  { id: "type", label: "Тип", width: 120, min: 90 },
   { id: "task", label: "Задача", width: 300, min: 180 },
   { id: "before", label: "Без AI", width: 155, min: 120 },
   { id: "after", label: "С AI", width: 150, min: 120 },
@@ -87,7 +148,14 @@ const columns: Column[] = [
   { id: "author", label: "Автор", width: 125, min: 90 },
 ];
 
-function formatDuration(totalSeconds: number) {
+function formatDuration(totalSeconds?: number) {
+  if (totalSeconds === undefined) return "—";
+  if (totalSeconds >= 60 * 60) {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours} ч${minutes ? ` ${minutes} мин` : ""}${seconds ? ` ${seconds} сек` : ""}`;
+  }
   if (totalSeconds < 60) return `${totalSeconds} сек`;
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
@@ -95,16 +163,24 @@ function formatDuration(totalSeconds: number) {
 }
 
 function formatSaving(practice: Practice) {
+  if (practice.beforeSeconds === undefined || practice.afterSeconds === undefined) return null;
   return formatDuration(practice.beforeSeconds - practice.afterSeconds);
 }
 
 function formatFactor(practice: Practice) {
+  if (practice.beforeSeconds === undefined || practice.afterSeconds === undefined || practice.afterSeconds === 0) return null;
   return (practice.beforeSeconds / practice.afterSeconds)
     .toLocaleString("ru-RU", { maximumFractionDigits: 1 }) + "×";
 }
 
+function formatTimeNote(practice: Practice, side: "before" | "after") {
+  const note = side === "before" ? practice.beforeNote : practice.afterNote;
+  if (note) return note;
+  return practice.batch ? `на ${practice.batch} багов` : "";
+}
+
 function matchesSearch(practice: Practice, query: string) {
-  const haystack = [practice.name, practice.type, practice.task, practice.author]
+  const haystack = [practice.name, practice.task, practice.author]
     .join(" ")
     .toLocaleLowerCase("ru-RU");
   return haystack.includes(query.trim().toLocaleLowerCase("ru-RU"));
@@ -217,22 +293,38 @@ export default function App() {
   }, []);
 
   async function exportExcel() {
-    const XLSX = await import("xlsx");
+    const XLSX = await import("xlsx-js-style");
     const rows = visiblePractices.map((practice) => ({
       Название: practice.name,
-      Тип: practice.type,
       Задача: practice.task,
-      "Время без AI": `${formatDuration(practice.beforeSeconds)} на ${practice.batch} багов`,
-      "Время с AI": `${formatDuration(practice.afterSeconds)} на ${practice.batch} багов`,
-      Эффект: `−${formatSaving(practice)}, в ${formatFactor(practice)} быстрее`,
+      "Время без AI": [formatDuration(practice.beforeSeconds), formatTimeNote(practice, "before")].filter(Boolean).join(" "),
+      "Время с AI": [formatDuration(practice.afterSeconds), formatTimeNote(practice, "after")].filter(Boolean).join(" "),
+      Эффект: formatSaving(practice) ? `−${formatSaving(practice)}, в ${formatFactor(practice)} быстрее` : "—",
       Статус: statusLabels[practice.status],
       Видео: practice.video,
       Автор: practice.author,
     }));
     const sheet = XLSX.utils.json_to_sheet(rows);
+    const range = XLSX.utils.decode_range(sheet["!ref"] ?? "A1");
+    for (let row = range.s.r; row <= range.e.r; row += 1) {
+      for (let col = range.s.c; col <= range.e.c; col += 1) {
+        const address = XLSX.utils.encode_cell({ r: row, c: col });
+        const cell = sheet[address];
+        if (!cell) continue;
+        cell.s = {
+          font: row === range.s.r ? { bold: true } : {},
+          border: {
+            top: { style: "thin", color: { rgb: "D9D9D2" } },
+            bottom: { style: "thin", color: { rgb: "D9D9D2" } },
+            left: { style: "thin", color: { rgb: "D9D9D2" } },
+            right: { style: "thin", color: { rgb: "D9D9D2" } },
+          },
+        };
+      }
+    }
     sheet["!cols"] = [
-      { wch: 36 }, { wch: 14 }, { wch: 52 }, { wch: 26 }, { wch: 25 },
-      { wch: 36 }, { wch: 17 }, { wch: 36 }, { wch: 16 },
+      { wch: 36 }, { wch: 52 }, { wch: 26 }, { wch: 25 },
+      { wch: 36 }, { wch: 17 }, { wch: 20 }, { wch: 16 },
     ];
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, "Практики AI");
@@ -322,19 +414,20 @@ export default function App() {
                   <TableCell className="practice-name-cell">
                     <span className="practice-name">{practice.name}</span>
                   </TableCell>
-                  <TableCell><Badge variant="dot" color="gray" size="compact">{practice.type}</Badge></TableCell>
-                  <TableCell className="task-cell">{practice.task}</TableCell>
+                  <TableCell className="task-cell">{practice.task || <span className="missing-value">—</span>}</TableCell>
                   <TableCell className="time-cell">
                     <span className="duration">{formatDuration(practice.beforeSeconds)}</span>
-                    <span className="unit">на {practice.batch} багов</span>
+                    {formatTimeNote(practice, "before") && <span className="unit">{formatTimeNote(practice, "before")}</span>}
                   </TableCell>
                   <TableCell className="time-cell">
                     <span className="duration">{formatDuration(practice.afterSeconds)}</span>
-                    <span className="unit">на {practice.batch} багов</span>
+                    {formatTimeNote(practice, "after") && <span className="unit">{formatTimeNote(practice, "after")}</span>}
                   </TableCell>
                   <TableCell className="effect-cell">
-                    <span className="duration">−{formatSaving(practice)}</span>
-                    <span className="unit">в {formatFactor(practice)} быстрее</span>
+                    <span className={`duration${formatSaving(practice) ? "" : " missing-value"}`}>
+                      {formatSaving(practice) ? `−${formatSaving(practice)}` : "—"}
+                    </span>
+                    {formatFactor(practice) && <span className="unit">в {formatFactor(practice)} быстрее</span>}
                   </TableCell>
                   <TableCell>
                     <Badge variant="dot" color={statusColors[practice.status]}>
@@ -344,7 +437,7 @@ export default function App() {
                   <TableCell>
                     {practice.video ? (
                       <a className="video-link" href={practice.video} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>
-                        Смотреть <ArrowUpRight size={13} aria-hidden="true" />
+                        Ссылка <ArrowUpRight size={13} aria-hidden="true" />
                       </a>
                     ) : <span className="missing-value">—</span>}
                   </TableCell>
@@ -392,22 +485,24 @@ export default function App() {
           <DialogContent size="lg" className="practice-dialog">
             <DialogHeader>
               <div className="dialog-meta">
-                <Badge variant="dot" color="gray" size="compact">{selectedPractice.type}</Badge>
+                {selectedPractice.type && selectedPractice.type !== "—" && (
+                  <Badge variant="dot" color="gray" size="compact">{selectedPractice.type}</Badge>
+                )}
                 <Badge variant="dot" color={statusColors[selectedPractice.status]} size="compact">
                   {statusLabels[selectedPractice.status]}
                 </Badge>
               </div>
               <DialogTitle>{selectedPractice.name}</DialogTitle>
-              <DialogDescription>{selectedPractice.task}.</DialogDescription>
+              <DialogDescription>{selectedPractice.task || "Описание пока не добавлено."}</DialogDescription>
             </DialogHeader>
             <div className="dialog-timing">
-              <div><span>Без AI</span><strong>{formatDuration(selectedPractice.beforeSeconds)}</strong><small>на {selectedPractice.batch} багов</small></div>
-              <div><span>С AI</span><strong>{formatDuration(selectedPractice.afterSeconds)}</strong><small>на {selectedPractice.batch} багов</small></div>
+              <div><span>Без AI</span><strong>{formatDuration(selectedPractice.beforeSeconds)}</strong><small>{formatTimeNote(selectedPractice, "before") || "—"}</small></div>
+              <div><span>С AI</span><strong>{formatDuration(selectedPractice.afterSeconds)}</strong><small>{formatTimeNote(selectedPractice, "after") || "—"}</small></div>
             </div>
             <div className="dialog-result">
               <span>Экономия времени</span>
-              <strong>−{formatSaving(selectedPractice)}</strong>
-              <small>в {formatFactor(selectedPractice)} быстрее</small>
+              <strong>{formatSaving(selectedPractice) ? `−${formatSaving(selectedPractice)}` : "—"}</strong>
+              <small>{formatFactor(selectedPractice) ? `в ${formatFactor(selectedPractice)} быстрее` : "—"}</small>
             </div>
             <div className="dialog-bottomline">
               <div><span>Автор</span><strong>{selectedPractice.author}</strong></div>
