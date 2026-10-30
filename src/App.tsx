@@ -110,7 +110,7 @@ const practices: Practice[] = [
     beforeNote: "в среднем",
     afterNote: "максимум",
     status: "idea",
-    video: "",
+    video: "https://sbervideo.sberbank.ru/watch/LKkMbt3AoWy7hJuVjE5",
     author: "Лиза",
   },
 ];
