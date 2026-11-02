@@ -1,7 +1,10 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type UIEvent } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type UIEvent } from "react";
 import {
   ArrowDownToLine,
   ArrowUpRight,
+  CirclePlus,
+  SlidersHorizontal,
+  X,
   Search,
 } from "lucide-react";
 import {
@@ -14,7 +17,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabItem } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -25,9 +27,10 @@ import {
 import "./App.css";
 
 type Status = "idea" | "testing" | "verified" | "archive";
-type ColumnId = "name" | "task" | "before" | "after" | "saving" | "status" | "video" | "author";
+type ColumnId = "name" | "instrument" | "type" | "task" | "before" | "after" | "saving" | "status" | "video" | "author";
 type Column = { id: ColumnId; label: string; width: number; min: number };
 type Practice = {
+  instrument?: string;
   name: string;
   type: string;
   task: string;
@@ -41,9 +44,11 @@ type Practice = {
   author: string;
 };
 
+// Keep new cases at the end; the table and Excel export preserve this order.
 const practices: Practice[] = [
   {
-    name: "Заведение багов через GigaCode",
+    name: "Массовое создание багов",
+    instrument: "GigaCode + Jira",
     type: "Скилл",
     task: "Ускоряет массовое заведение багов для дизайнеров",
     beforeSeconds: 18 * 60,
@@ -51,59 +56,57 @@ const practices: Practice[] = [
     batch: 10,
     status: "testing",
     video: "https://sbervideo.sberbank.ru/watch/AkLNoFA437mvCJuVZMB",
-    author: "Стас",
+    author: "Рыбалко Станислав Олегович",
   },
   {
-    name: "Работа с внешним Pixso и Claude",
-    type: "—",
+    name: "Создание рабочих макетов",
+    instrument: "Claude + Pixso",
+    type: "Пайплайн",
     task: "Как создавать и править рабочие макеты с помощью внешних инструментов",
-    status: "idea",
+    status: "testing",
     video: "",
-    author: "Настя",
+    author: "Шевцова Анастасия Сергеевна",
   },
   {
-    name: "Прототипирование с Codex",
-    type: "—",
+    name: "Создание кликабельных прототипов",
+    instrument: "Codex",
+    type: "Пайплайн",
     task: "Ускорение создания сценариев для тестирования",
     status: "idea",
     video: "",
-    author: "Стас",
+    author: "Рыбалко Станислав Олегович",
   },
   {
-    name: "Прототипирование с GigaCode (D2C Pixso)",
-    type: "—",
-    task: "Ускорение создания проволочных макетов",
+    name: "Создание кликабельных прототипов",
+    instrument: "GigaCode (D2C Pixso)",
+    type: "Пайплайн",
+    task: "Ускоряет создание сценариев для тестирования",
     status: "idea",
     video: "",
-    author: "Лиза",
+    author: "Мартынова Елизавета Сергеевна",
   },
   {
     name: "Подготовка к тестированиям с ИИ",
-    type: "—",
-    task: "Гипотезы, вопросы и прототипы для тестирования",
+    instrument: "GigaCode/Codex/Claude/и др.",
+    type: "Пайплайн",
+    task: "Помогает подобрать гипотезы и вопросы для тестирования",
     status: "testing",
     video: "",
-    author: "Настя",
+    author: "Шевцова Анастасия Сергеевна",
   },
   {
-    name: "Исследования с GigaCode",
-    type: "—",
-    task: "Исследование рынка и UX-паттернов с помощью GigaCode",
+    name: "Исследования",
+    instrument: "GigaCode",
+    type: "Пайплайн",
+    task: "Исследование рынка и UX-паттернов",
     status: "testing",
     video: "https://sbervideo.sberbank.ru/watch/MnVpdl8kEbX9hPu6mD3",
-    author: "Настя",
+    author: "Шевцова Анастасия Сергеевна",
   },
   {
-    name: "Пайплайн дизайн кейса",
-    type: "—",
-    task: "Исследования → мокапы → быстрые тесты → макеты с ИИ → прототипы для исследований и демонстрации решений → укомплектация кейса с результатами исследования и аргументацией решения",
-    status: "testing",
-    video: "https://sbervideo.sberbank.ru/watch/MnVpdl8kEbX9hPu6mD3",
-    author: "Настя",
-  },
-  {
-    name: "Генерация User Story из присланного БТ",
-    type: "Скилл",
+    name: "User Story из БТ",
+    instrument: "GigaCode + Confluence",
+    type: "Пайплайн",
     task: "Агент перечитывает объёмные БТ и формирует по ним User Story по единому шаблону: не только сценарий действий пользователя, но и все относящиеся к нему ограничения (правила валидации полей, общие требования сервиса и другие ограничения, которые влияют на элементы). Готовые стори сразу передаются дизайнеру без ручной правки аналитиком.",
     beforeSeconds: 2 * 60 * 60,
     afterSeconds: 10 * 60,
@@ -111,7 +114,7 @@ const practices: Practice[] = [
     afterNote: "максимум",
     status: "testing",
     video: "https://sbervideo.sberbank.ru/watch/LKkMbt3AoWy7hJuVjE5",
-    author: "Лиза",
+    author: "Мартынова Елизавета Сергеевна",
   },
 ];
 
@@ -137,15 +140,69 @@ const statusFilters: { value: "all" | Status; label: string }[] = [
   { value: "archive", label: "Архив" },
 ];
 
+const instrumentFilters = ["Claude", "Codex", "Confluence", "D2C Pixso", "GigaCode", "Jira", "Pixso"];
+const typeFilters = ["Скилл", "Пайплайн", "Плагин"];
+type FacetKey = "instrument" | "type" | "status" | "author";
+type MenuKey = FacetKey | "view" | null;
+
+function toggleFilterValue(values: string[], value: string) {
+  return values.includes(value) ? values.filter((item) => item !== value) : [...values, value];
+}
+
+function FilterGroup({
+  title,
+  options,
+  selected,
+  onChange,
+  single = false,
+}: {
+  title: string;
+  options: { value: string; label: string }[];
+  selected: string[];
+  onChange: (values: string[]) => void;
+  single?: boolean;
+}) {
+  return (
+    <fieldset className="filter-group">
+      <legend>{title}</legend>
+      {!single && (
+        <label className="filter-option">
+          <input type="checkbox" checked={selected.length === 0} onChange={() => onChange([])} />
+          <span>Все</span>
+        </label>
+      )}
+      {single && (
+        <label className="filter-option">
+          <input type="radio" name={`filter-${title}`} checked={selected.length === 0} onChange={() => onChange([])} />
+          <span>Все</span>
+        </label>
+      )}
+      {options.map((option) => (
+        <label className="filter-option" key={option.value}>
+          <input
+            type={single ? "radio" : "checkbox"}
+            name={single ? `filter-${title}` : undefined}
+            checked={selected.includes(option.value)}
+            onChange={() => onChange(single ? [option.value] : toggleFilterValue(selected, option.value))}
+          />
+          <span>{option.label}</span>
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
 const columns: Column[] = [
-  { id: "name", label: "Название", width: 300, min: 190 },
-  { id: "task", label: "Задача", width: 300, min: 180 },
-  { id: "before", label: "Без AI", width: 155, min: 120 },
-  { id: "after", label: "С AI", width: 150, min: 120 },
-  { id: "saving", label: "Экономия", width: 185, min: 145 },
-  { id: "status", label: "Статус", width: 160, min: 115 },
-  { id: "video", label: "Видео", width: 110, min: 80 },
-  { id: "author", label: "Автор", width: 125, min: 90 },
+  { id: "name", label: "Название задачи", width: 270, min: 190 },
+  { id: "instrument", label: "Инструмент", width: 210, min: 150 },
+  { id: "type", label: "Тип", width: 120, min: 90 },
+  { id: "task", label: "Задача для AI", width: 380, min: 240 },
+  { id: "before", label: "Время без AI на 1 чел.", width: 210, min: 165 },
+  { id: "after", label: "Время AI на 1 чел.", width: 195, min: 155 },
+  { id: "saving", label: "Экономия", width: 240, min: 180 },
+  { id: "status", label: "Статус", width: 150, min: 115 },
+  { id: "video", label: "Видео", width: 125, min: 90 },
+  { id: "author", label: "Автор", width: 260, min: 200 },
 ];
 
 function formatDuration(totalSeconds?: number) {
@@ -180,7 +237,7 @@ function formatTimeNote(practice: Practice, side: "before" | "after") {
 }
 
 function matchesSearch(practice: Practice, query: string) {
-  const haystack = [practice.name, practice.task, practice.author]
+  const haystack = [practice.instrument, practice.name, practice.type, practice.task, practice.author]
     .join(" ")
     .toLocaleLowerCase("ru-RU");
   return haystack.includes(query.trim().toLocaleLowerCase("ru-RU"));
@@ -247,23 +304,75 @@ function ResizeHandle({
 export default function App() {
   const [query, setQuery] = useState("");
   const [activeStatus, setActiveStatus] = useState<"all" | Status>("all");
+  const [selectedInstruments, setSelectedInstruments] = useState<string[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
+  const [openMenu, setOpenMenu] = useState<MenuKey>(null);
+  const [columnSearch, setColumnSearch] = useState("");
+  const [visibleColumnIds, setVisibleColumnIds] = useState<ColumnId[]>(() => columns.map(({ id }) => id));
   const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null);
   const [horizontalProgress, setHorizontalProgress] = useState(0);
   const [horizontalThumbWidth, setHorizontalThumbWidth] = useState(48);
   const tableViewportRef = useRef<HTMLDivElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
   const [columnWidths, setColumnWidths] = useState<Record<ColumnId, number>>(() =>
     Object.fromEntries(columns.map(({ id, width }) => [id, width])) as Record<ColumnId, number>,
   );
-  const tableWidth = columns.reduce((total, column) => total + columnWidths[column.id], 0);
+  const authors = useMemo(() => [...new Set(practices.map(({ author }) => author))].sort((a, b) => a.localeCompare(b, "ru")), []);
+  const activeFilterCount = selectedInstruments.length + selectedTypes.length + selectedAuthors.length + (activeStatus === "all" ? 0 : 1);
+  const visibleColumns = columns.filter(({ id }) => visibleColumnIds.includes(id));
+  const tableWidth = visibleColumns.reduce((total, column) => total + columnWidths[column.id], 0);
 
-  const visiblePractices = useMemo(
-    () => practices.filter((practice) =>
+  const visiblePractices = useMemo(() => {
+    const filtered = practices.filter((practice) =>
       (activeStatus === "all" || practice.status === activeStatus) &&
+      (selectedInstruments.length === 0 || selectedInstruments.some((instrument) => practice.instrument?.toLocaleLowerCase().includes(instrument.toLocaleLowerCase()))) &&
+      (selectedTypes.length === 0 || selectedTypes.includes(practice.type)) &&
+      (selectedAuthors.length === 0 || selectedAuthors.includes(practice.author)) &&
       matchesSearch(practice, query),
-    ),
-    [activeStatus, query],
-  );
+    );
+    return filtered;
+  }, [activeStatus, query, selectedAuthors, selectedInstruments, selectedTypes]);
   const blankRows = Math.max(0, 16 - visiblePractices.length);
+  const filterFacets: {
+    key: FacetKey;
+    label: string;
+    options: { value: string; label: string }[];
+    selected: string[];
+    onChange: (values: string[]) => void;
+    single?: boolean;
+  }[] = [
+    { key: "instrument", label: "Инструмент", options: instrumentFilters.map((value) => ({ value, label: value })), selected: selectedInstruments, onChange: setSelectedInstruments },
+    { key: "type", label: "Тип", options: typeFilters.map((value) => ({ value, label: value })), selected: selectedTypes, onChange: setSelectedTypes },
+    { key: "status", label: "Статус", options: statusFilters.filter(({ value }) => value !== "all").map(({ value, label }) => ({ value, label })), selected: activeStatus === "all" ? [] : [activeStatus], onChange: (values) => setActiveStatus((values.at(-1) as Status | undefined) ?? "all"), single: true },
+    { key: "author", label: "Автор", options: authors.map((value) => ({ value, label: value })), selected: selectedAuthors, onChange: setSelectedAuthors },
+  ];
+
+  useEffect(() => {
+    if (!openMenu) return;
+    const closeOnOutsidePointer = (event: globalThis.PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      const openAnchor = toolbarRef.current?.querySelector<HTMLElement>(`[data-menu-key="${openMenu}"]`);
+      if (!openAnchor?.contains(target)) setOpenMenu(null);
+    };
+    const closeOnEscape = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") setOpenMenu(null);
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [openMenu]);
+
+  function resetFilters() {
+    setSelectedInstruments([]);
+    setSelectedTypes([]);
+    setSelectedAuthors([]);
+    setActiveStatus("all");
+  }
 
   function syncHorizontalScrollbar(element = tableViewportRef.current) {
     if (!element) return;
@@ -295,11 +404,13 @@ export default function App() {
   async function exportExcel() {
     const XLSX = await import("xlsx-js-style");
     const rows = visiblePractices.map((practice) => ({
-      Название: practice.name,
-      Задача: practice.task,
-      "Время без AI": [formatDuration(practice.beforeSeconds), formatTimeNote(practice, "before")].filter(Boolean).join(" "),
-      "Время с AI": [formatDuration(practice.afterSeconds), formatTimeNote(practice, "after")].filter(Boolean).join(" "),
-      Эффект: formatSaving(practice) ? `−${formatSaving(practice)}, в ${formatFactor(practice)} быстрее` : "—",
+      "Название задачи": practice.name,
+      Инструмент: practice.instrument ?? "",
+      Тип: practice.type,
+      "Задача для AI": practice.task,
+      "Время без AI на 1 чел.": [formatDuration(practice.beforeSeconds), formatTimeNote(practice, "before")].filter(Boolean).join(" "),
+      "Время AI на 1 чел.": [formatDuration(practice.afterSeconds), formatTimeNote(practice, "after")].filter(Boolean).join(" "),
+      Экономия: formatSaving(practice) ? `−${formatSaving(practice)}, в ${formatFactor(practice)} быстрее` : "—",
       Статус: statusLabels[practice.status],
       Видео: practice.video,
       Автор: practice.author,
@@ -314,17 +425,17 @@ export default function App() {
         cell.s = {
           font: row === range.s.r ? { bold: true } : {},
           border: {
-            top: { style: "thin", color: { rgb: "D9D9D2" } },
-            bottom: { style: "thin", color: { rgb: "D9D9D2" } },
-            left: { style: "thin", color: { rgb: "D9D9D2" } },
-            right: { style: "thin", color: { rgb: "D9D9D2" } },
+            top: { style: "thin", color: { rgb: "000000" } },
+            bottom: { style: "thin", color: { rgb: "000000" } },
+            left: { style: "thin", color: { rgb: "000000" } },
+            right: { style: "thin", color: { rgb: "000000" } },
           },
         };
       }
     }
     sheet["!cols"] = [
-      { wch: 36 }, { wch: 52 }, { wch: 26 }, { wch: 25 },
-      { wch: 36 }, { wch: 17 }, { wch: 20 }, { wch: 16 },
+      { wch: 36 }, { wch: 28 }, { wch: 14 }, { wch: 60 }, { wch: 28 },
+      { wch: 26 }, { wch: 42 }, { wch: 17 }, { wch: 54 }, { wch: 34 },
     ];
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, "Практики AI");
@@ -335,6 +446,31 @@ export default function App() {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       setSelectedPractice(practice);
+    }
+  }
+
+  function renderCell(practice: Practice, column: ColumnId) {
+    switch (column) {
+      case "name":
+        return <TableCell className="practice-name-cell"><span className="practice-name">{practice.name}</span></TableCell>;
+      case "instrument":
+        return <TableCell>{practice.instrument || <span className="missing-value">—</span>}</TableCell>;
+      case "type":
+        return <TableCell><Badge variant="dot" color="gray" className="table-badge type-badge">{practice.type}</Badge></TableCell>;
+      case "task":
+        return <TableCell className="task-cell">{practice.task || <span className="missing-value">—</span>}</TableCell>;
+      case "before":
+        return <TableCell className="time-cell"><span className="duration">{formatDuration(practice.beforeSeconds)}</span>{formatTimeNote(practice, "before") && <span className="unit">{formatTimeNote(practice, "before")}</span>}</TableCell>;
+      case "after":
+        return <TableCell className="time-cell"><span className="duration">{formatDuration(practice.afterSeconds)}</span>{formatTimeNote(practice, "after") && <span className="unit">{formatTimeNote(practice, "after")}</span>}</TableCell>;
+      case "saving":
+        return <TableCell className="effect-cell"><span className={`duration${formatSaving(practice) ? "" : " missing-value"}`}>{formatSaving(practice) ? `−${formatSaving(practice)}` : "—"}</span>{formatFactor(practice) && <span className="unit">в {formatFactor(practice)} быстрее</span>}</TableCell>;
+      case "status":
+        return <TableCell><Badge variant="dot" color={statusColors[practice.status]} className={`table-badge status-badge status-${practice.status}`}>{statusLabels[practice.status]}</Badge></TableCell>;
+      case "video":
+        return <TableCell>{practice.video ? <a className="video-link" href={practice.video} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>Ссылка <ArrowUpRight size={13} aria-hidden="true" /></a> : <span className="missing-value">—</span>}</TableCell>;
+      case "author":
+        return <TableCell className="author-cell">{practice.author}</TableCell>;
     }
   }
 
@@ -357,39 +493,120 @@ export default function App() {
       </section>
 
       <section className="catalog" aria-label="Каталог практик">
-        <div className="catalog-controls">
-          <label className="search-field">
-            <Search size={16} strokeWidth={1.7} aria-hidden="true" />
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              type="search"
-              placeholder="Найти практику"
-              aria-label="Найти практику"
-            />
-            {query && <span className="search-count">{visiblePractices.length}</span>}
-          </label>
-          <Tabs value={activeStatus} onValueChange={(value) => setActiveStatus(value as "all" | Status)}>
-            <TabsList aria-label="Фильтр по статусу" className="status-tabs">
-              {statusFilters.map((filter) => (
-                <TabItem key={filter.value} value={filter.value} label={filter.label} />
+        <div className="catalog-controls" ref={toolbarRef}>
+          <div className="catalog-controls-start">
+            <label className="search-field">
+              <Search size={16} strokeWidth={1.7} aria-hidden="true" />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                type="search"
+                placeholder="Найти практику"
+                aria-label="Найти практику"
+              />
+              {query && <span className="search-count">{visiblePractices.length}</span>}
+            </label>
+            <div className="facet-controls" aria-label="Фильтры практик">
+              {filterFacets.map((facet) => (
+                <div className="menu-anchor" key={facet.key} data-menu-key={facet.key}>
+                  <Button
+                    type="button"
+                    variant="tertiary"
+                    size="compact"
+                    leadingIcon={CirclePlus}
+                    className="toolbar-chip"
+                    active={openMenu === facet.key || facet.selected.length > 0}
+                    aria-expanded={openMenu === facet.key}
+                    aria-haspopup="dialog"
+                    onClick={() => setOpenMenu((open) => open === facet.key ? null : facet.key)}
+                  >
+                    {facet.label}
+                    {facet.selected.length > 0 && <span className="filter-count">{facet.selected.length}</span>}
+                  </Button>
+                  {openMenu === facet.key && (
+                    <div className="toolbar-popover facet-popover" role="dialog" aria-label={`Фильтр: ${facet.label}`}>
+                      <FilterGroup
+                        title={facet.label}
+                        options={facet.options}
+                        selected={facet.selected}
+                        onChange={facet.onChange}
+                        single={facet.single}
+                      />
+                    </div>
+                  )}
+                </div>
               ))}
-            </TabsList>
-          </Tabs>
+              {activeFilterCount > 0 && (
+                <div className="active-filter-summary" aria-label={`${activeFilterCount} активных фильтра`}>
+                  <span>{activeFilterCount}</span>
+                  <button type="button" aria-label="Сбросить фильтры" title="Сбросить фильтры" onClick={resetFilters}>
+                    <X size={13} aria-hidden="true" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="catalog-actions">
+            <div className="menu-anchor" data-menu-key="view">
+              <Button
+                type="button"
+                variant="tertiary"
+                size="compact"
+                leadingIcon={SlidersHorizontal}
+                className="toolbar-chip"
+                aria-expanded={openMenu === "view"}
+                aria-haspopup="dialog"
+                onClick={() => setOpenMenu((open) => open === "view" ? null : "view")}
+              >
+                Вид
+              </Button>
+              {openMenu === "view" && (
+                <div className="toolbar-popover view-popover" role="dialog" aria-label="Видимые столбцы">
+                  <label className="column-search">
+                    <Search size={15} aria-hidden="true" />
+                    <input value={columnSearch} onChange={(event) => setColumnSearch(event.target.value)} placeholder="Найти столбец…" autoFocus />
+                  </label>
+                  <div className="column-options">
+                    {columns.filter(({ label }) => label.toLocaleLowerCase().includes(columnSearch.toLocaleLowerCase())).map((column) => {
+                      const checked = visibleColumnIds.includes(column.id);
+                      return (
+                        <label className="column-option" key={column.id}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            disabled={checked && visibleColumnIds.length === 1}
+                            onChange={() => setVisibleColumnIds((current) => checked ? current.filter((id) => id !== column.id) : [...current, column.id])}
+                          />
+                          <span>{column.label}</span>
+                        </label>
+                      );
+                    })}
+                    {columns.every(({ label }) => !label.toLocaleLowerCase().includes(columnSearch.toLocaleLowerCase())) && <p className="no-columns">Столбцы не найдены</p>}
+                  </div>
+                </div>
+              )}
+            </div>
+
+          </div>
         </div>
 
+        <div className="table-shell">
         <div className="table-viewport" ref={tableViewportRef} tabIndex={0} aria-label="Таблица практик: прокрутка по вертикали и горизонтали" onScroll={(event: UIEvent<HTMLDivElement>) => syncHorizontalScrollbar(event.currentTarget)}>
           <Table className="practice-table" aria-label="Практики с AI" style={{ width: `max(100%, ${tableWidth}px, calc(100vw + 180px))` }}>
             <colgroup>
-              {columns.map((column) => (
+              {visibleColumns.map((column) => (
                 <col key={column.id} style={{ width: `${columnWidths[column.id]}px` }} />
               ))}
             </colgroup>
             <TableHeader>
               <TableRow className="table-heading-row">
-                {columns.map((column) => (
-                  <TableHead key={column.id} className="resizable-head">
-                    <span>{column.label}</span>
+                {visibleColumns.map((column) => (
+                  <TableHead
+                    key={column.id}
+                    className="resizable-head"
+                  >
+                    <span className="table-heading-label">{column.label}</span>
                     <ResizeHandle
                       label={column.label}
                       width={columnWidths[column.id]}
@@ -403,50 +620,19 @@ export default function App() {
             <TableBody>
               {visiblePractices.map((practice, index) => (
                 <TableRow
-                  key={practice.name}
-                  index={index}
+                  key={`${practice.name}-${practice.instrument ?? ""}`}
                   tabIndex={0}
                   className="practice-row"
                   onClick={() => setSelectedPractice(practice)}
                   onKeyDown={(event) => openRowOnKey(event, practice)}
                   aria-label={`${practice.name}. Открыть подробности.`}
                 >
-                  <TableCell className="practice-name-cell">
-                    <span className="practice-name">{practice.name}</span>
-                  </TableCell>
-                  <TableCell className="task-cell">{practice.task || <span className="missing-value">—</span>}</TableCell>
-                  <TableCell className="time-cell">
-                    <span className="duration">{formatDuration(practice.beforeSeconds)}</span>
-                    {formatTimeNote(practice, "before") && <span className="unit">{formatTimeNote(practice, "before")}</span>}
-                  </TableCell>
-                  <TableCell className="time-cell">
-                    <span className="duration">{formatDuration(practice.afterSeconds)}</span>
-                    {formatTimeNote(practice, "after") && <span className="unit">{formatTimeNote(practice, "after")}</span>}
-                  </TableCell>
-                  <TableCell className="effect-cell">
-                    <span className={`duration${formatSaving(practice) ? "" : " missing-value"}`}>
-                      {formatSaving(practice) ? `−${formatSaving(practice)}` : "—"}
-                    </span>
-                    {formatFactor(practice) && <span className="unit">в {formatFactor(practice)} быстрее</span>}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="dot" color={statusColors[practice.status]}>
-                      {statusLabels[practice.status]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {practice.video ? (
-                      <a className="video-link" href={practice.video} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>
-                        Ссылка <ArrowUpRight size={13} aria-hidden="true" />
-                      </a>
-                    ) : <span className="missing-value">—</span>}
-                  </TableCell>
-                  <TableCell className="author-cell">{practice.author}</TableCell>
+                  {visibleColumns.map((column) => <Fragment key={column.id}>{renderCell(practice, column.id)}</Fragment>)}
                 </TableRow>
               ))}
               {Array.from({ length: blankRows }, (_, index) => (
                 <TableRow key={`empty-${index}`} className="blank-row" aria-hidden="true">
-                  {columns.map((column) => <TableCell key={column.id} />)}
+                  {visibleColumns.map((column) => <TableCell key={column.id} />)}
                 </TableRow>
               ))}
             </TableBody>
@@ -474,6 +660,7 @@ export default function App() {
               setHorizontalProgress(progress);
             }}
           />
+        </div>
         </div>
         <div className="catalog-footer">
           {visiblePractices.length} {visiblePractices.length === 1 ? "практика" : "практик"}
@@ -505,7 +692,8 @@ export default function App() {
               <small>{formatFactor(selectedPractice) ? `в ${formatFactor(selectedPractice)} быстрее` : "—"}</small>
             </div>
             <div className="dialog-bottomline">
-              <div><span>Автор</span><strong>{selectedPractice.author}</strong></div>
+              <div><span>Инструмент</span><strong>{selectedPractice.instrument || <span className="missing-value">Не указан</span>}</strong></div>
+              <div><span>Автор (полное ФИО)</span><strong>{selectedPractice.author}</strong></div>
               <div><span>Видео</span>{selectedPractice.video ? <a href={selectedPractice.video} target="_blank" rel="noreferrer">Открыть видео <ArrowUpRight size={13} /></a> : <strong className="missing-value">Не добавлено</strong>}</div>
             </div>
           </DialogContent>
