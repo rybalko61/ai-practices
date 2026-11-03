@@ -131,7 +131,7 @@ const practices: Practice[] = [
     factorText: "7,5×",
     status: "inUse",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Экспорт в PowerPoint",
@@ -144,7 +144,7 @@ const practices: Practice[] = [
     factorText: "36×",
     status: "inUse",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Blobs, Waves and Shapes",
@@ -157,7 +157,7 @@ const practices: Practice[] = [
     factorText: "30×",
     status: "inUse",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "неРеальный контент",
@@ -170,7 +170,7 @@ const practices: Practice[] = [
     factorText: "20×",
     status: "inUse",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Mesh-градиент",
@@ -183,7 +183,7 @@ const practices: Practice[] = [
     factorText: "45×",
     status: "testing",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Подготовка файла к задаче",
@@ -196,7 +196,7 @@ const practices: Practice[] = [
     factorText: "30×",
     status: "testing",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Сборщик таблиц",
@@ -209,7 +209,7 @@ const practices: Practice[] = [
     factorText: "30×",
     status: "testing",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Поиск по библиотекам",
@@ -222,7 +222,7 @@ const practices: Practice[] = [
     factorText: "20×",
     status: "testing",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Обновление компонентов",
@@ -235,7 +235,7 @@ const practices: Practice[] = [
     factorText: "12×",
     status: "testing",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Проверка макета",
@@ -248,7 +248,7 @@ const practices: Practice[] = [
     factorText: "24×",
     status: "testing",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Описания вариантов",
@@ -261,7 +261,7 @@ const practices: Practice[] = [
     factorText: "20×",
     status: "testing",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Токены и стили",
@@ -274,7 +274,7 @@ const practices: Practice[] = [
     factorText: "32×",
     status: "testing",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Векторизация",
@@ -287,7 +287,7 @@ const practices: Practice[] = [
     factorText: "20×",
     status: "testing",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Пакет «Ролик из HTML»",
@@ -300,7 +300,7 @@ const practices: Practice[] = [
     factorText: "16×",
     status: "inUse",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
   {
     name: "Пакет «Режим правок»",
@@ -313,7 +313,7 @@ const practices: Practice[] = [
     factorText: "12×",
     status: "inUse",
     video: "",
-    author: "Ника",
+    author: "Малышева Вероника Николаевна",
   },
 ];
 
