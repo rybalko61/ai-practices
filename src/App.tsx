@@ -3,7 +3,7 @@ import {
   ArrowDownToLine,
   ArrowUpRight,
   CirclePlus,
-  SlidersHorizontal,
+  Settings,
   X,
   Search,
 } from "lucide-react";
@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import "./App.css";
 
-type Status = "idea" | "testing" | "verified" | "archive";
+type Status = "idea" | "testing" | "verified" | "archive" | "inUse";
 type ColumnId = "name" | "instrument" | "type" | "task" | "before" | "after" | "saving" | "status" | "video" | "author";
 type Column = { id: ColumnId; label: string; width: number; min: number };
 type Practice = {
@@ -39,6 +39,10 @@ type Practice = {
   batch?: number;
   beforeNote?: string;
   afterNote?: string;
+  beforeText?: string;
+  afterText?: string;
+  savingText?: string;
+  factorText?: string;
   status: Status;
   video: string;
   author: string;
@@ -116,6 +120,201 @@ const practices: Practice[] = [
     video: "https://sbervideo.sberbank.ru/watch/LKkMbt3AoWy7hJuVjE5",
     author: "Мартынова Елизавета Сергеевна",
   },
+  {
+    name: "Плагины Pixso с Claude Code",
+    instrument: "Claude Code + Pixso",
+    type: "Плагин",
+    task: "Дизайнер сам пишет внутренние плагины Pixso, раз плагины сообщества в контуре запрещены. С августа создано 13 плагинов, 3 опубликованы. Каркас и знания о Pixso открыты коллегам в pixso-plugin-base.",
+    beforeText: "15 рабочих дней разработчика на плагин",
+    afterText: "2 дня дизайнера на плагин",
+    savingText: "13 дней",
+    factorText: "7,5×",
+    status: "inUse",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Экспорт в PowerPoint",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Переводит фреймы Pixso в .pptx с редактируемым текстом, фигурами и стрелками — без ручной пересборки слайдов.",
+    beforeText: "3 ч на 10 слайдов",
+    afterText: "5 мин на 10 слайдов",
+    savingText: "2 ч 55 мин",
+    factorText: "36×",
+    status: "inUse",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Blobs, Waves and Shapes",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Создаёт кляксы, волны и 157 фигур в векторе для иллюстраций и фонов.",
+    beforeText: "15 мин на фигуру",
+    afterText: "30 сек на фигуру",
+    savingText: "14 мин 30 сек",
+    factorText: "30×",
+    status: "inUse",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "неРеальный контент",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Заполняет макеты и таблицы правдоподобными данными: суммами, датами, ФИО и реквизитами с верными контрольными суммами и паспортными данными.",
+    beforeText: "40 мин на таблицу из 20 строк",
+    afterText: "2 мин на таблицу из 20 строк",
+    savingText: "38 мин",
+    factorText: "20×",
+    status: "inUse",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Mesh-градиент",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Создаёт градиент по точкам как картинку или вектор. Мастер-градиент платформы добавляется первой плиткой. На стенде работает, отдан на публикацию.",
+    beforeText: "1 ч 30 мин на градиент",
+    afterText: "2 мин на градиент",
+    savingText: "1 ч 28 мин",
+    factorText: "45×",
+    status: "testing",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Подготовка файла к задаче",
+    instrument: "Pixso + GigaCode",
+    type: "Плагин",
+    task: "Создаёт новый файл задачи по .json от GigaCode: библиотеки, страницы, обложка, стикер и секции сценариев — в один щелчок.",
+    beforeText: "1 ч на файл",
+    afterText: "2 мин на файл",
+    savingText: "58 мин",
+    factorText: "30×",
+    status: "testing",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Сборщик таблиц",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Собирает таблицу SDDS FinAI из компонентов библиотеки со всей обвязкой в один щелчок.",
+    beforeText: "1 ч 30 мин на таблицу",
+    afterText: "3 мин на таблицу",
+    savingText: "1 ч 27 мин",
+    factorText: "30×",
+    status: "testing",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Поиск по библиотекам",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Подключает к файлу только нужные библиотеки наборами и находит, где используется каждая.",
+    beforeText: "20 мин на файл",
+    afterText: "1 мин на файл",
+    savingText: "19 мин",
+    factorText: "20×",
+    status: "testing",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Обновление компонентов",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Показывает, что в файле устарело и чем заменить; обновляет компоненты с переносом ручных правок.",
+    beforeText: "2 ч на файл",
+    afterText: "10 мин на файл",
+    savingText: "1 ч 50 мин",
+    factorText: "12×",
+    status: "testing",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Проверка макета",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Находит в файле цвета, тексты, эффекты, отступы и компоненты, которые не соответствуют дизайн-системе.",
+    beforeText: "2 ч на файл",
+    afterText: "5 мин на файл",
+    savingText: "1 ч 55 мин",
+    factorText: "24×",
+    status: "testing",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Описания вариантов",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Добавляет имя компонента и свойства варианта в описание, чтобы их было видно в DevMode.",
+    beforeText: "1 ч на 60 вариантов",
+    afterText: "3 мин на 60 вариантов",
+    savingText: "57 мин",
+    factorText: "20×",
+    status: "testing",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Токены и стили",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Возвращает связи стилей с переменными и переменных с базовыми токенами после переноса из Figma.",
+    beforeText: "8 ч на библиотеку",
+    afterText: "15 мин на библиотеку",
+    savingText: "7 ч 45 мин",
+    factorText: "32×",
+    status: "testing",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Векторизация",
+    instrument: "Pixso",
+    type: "Плагин",
+    task: "Векторизует изображения для иконок и чёрно-белых PNG: линию, силуэт или цвет.",
+    beforeText: "20 мин на иконку",
+    afterText: "1 мин на иконку",
+    savingText: "19 мин",
+    factorText: "20×",
+    status: "testing",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Пакет «Ролик из HTML»",
+    instrument: "Любой ИИ + HTML",
+    type: "Пайплайн",
+    task: "Создаёт короткий проморолик из HTML с любым ИИ без After Effects: плеер с таймлайном, правки прямо в кадре, приёмы движения и инструкция для ИИ.",
+    beforeText: "32 ч на ролик длительностью 30 сек",
+    afterText: "2 ч на ролик длительностью 30 сек",
+    savingText: "30 ч",
+    factorText: "16×",
+    status: "inUse",
+    video: "",
+    author: "Ника",
+  },
+  {
+    name: "Пакет «Режим правок»",
+    instrument: "Любой ИИ + HTML",
+    type: "Пайплайн",
+    task: "Позволяет править HTML-презентации и сайты прямо на странице: сдвигать блоки, менять текст и отправлять замечания ИИ одним сообщением.",
+    beforeText: "4 ч на 40 правок",
+    afterText: "20 мин на 40 правок",
+    savingText: "3 ч 40 мин",
+    factorText: "12×",
+    status: "inUse",
+    video: "",
+    author: "Ника",
+  },
 ];
 
 const statusLabels: Record<Status, string> = {
@@ -123,6 +322,7 @@ const statusLabels: Record<Status, string> = {
   testing: "Тестируем",
   verified: "Проверено",
   archive: "Архив",
+  inUse: "Используем",
 };
 
 const statusColors: Record<Status, "gray" | "amber" | "green"> = {
@@ -130,6 +330,7 @@ const statusColors: Record<Status, "gray" | "amber" | "green"> = {
   testing: "amber",
   verified: "green",
   archive: "gray",
+  inUse: "green",
 };
 
 const statusFilters: { value: "all" | Status; label: string }[] = [
@@ -138,6 +339,7 @@ const statusFilters: { value: "all" | Status; label: string }[] = [
   { value: "testing", label: "Тестируем" },
   { value: "verified", label: "Проверено" },
   { value: "archive", label: "Архив" },
+  { value: "inUse", label: "Используем" },
 ];
 
 const instrumentFilters = ["Claude", "Codex", "Confluence", "D2C Pixso", "GigaCode", "Jira", "Pixso"];
@@ -220,14 +422,24 @@ function formatDuration(totalSeconds?: number) {
 }
 
 function formatSaving(practice: Practice) {
+  if (practice.savingText) return practice.savingText;
   if (practice.beforeSeconds === undefined || practice.afterSeconds === undefined) return null;
   return formatDuration(practice.beforeSeconds - practice.afterSeconds);
 }
 
 function formatFactor(practice: Practice) {
+  if (practice.factorText) return practice.factorText;
   if (practice.beforeSeconds === undefined || practice.afterSeconds === undefined || practice.afterSeconds === 0) return null;
   return (practice.beforeSeconds / practice.afterSeconds)
     .toLocaleString("ru-RU", { maximumFractionDigits: 1 }) + "×";
+}
+
+function formatBefore(practice: Practice) {
+  return practice.beforeText ?? formatDuration(practice.beforeSeconds);
+}
+
+function formatAfter(practice: Practice) {
+  return practice.afterText ?? formatDuration(practice.afterSeconds);
 }
 
 function formatTimeNote(practice: Practice, side: "before" | "after") {
@@ -408,8 +620,8 @@ export default function App() {
       Инструмент: practice.instrument ?? "",
       Тип: practice.type,
       "Задача для AI": practice.task,
-      "Время без AI на 1 чел.": [formatDuration(practice.beforeSeconds), formatTimeNote(practice, "before")].filter(Boolean).join(" "),
-      "Время AI на 1 чел.": [formatDuration(practice.afterSeconds), formatTimeNote(practice, "after")].filter(Boolean).join(" "),
+      "Время без AI на 1 чел.": [formatBefore(practice), formatTimeNote(practice, "before")].filter(Boolean).join(" "),
+      "Время AI на 1 чел.": [formatAfter(practice), formatTimeNote(practice, "after")].filter(Boolean).join(" "),
       Экономия: formatSaving(practice) ? `−${formatSaving(practice)}, в ${formatFactor(practice)} быстрее` : "—",
       Статус: statusLabels[practice.status],
       Видео: practice.video,
@@ -460,9 +672,9 @@ export default function App() {
       case "task":
         return <TableCell className="task-cell">{practice.task || <span className="missing-value">—</span>}</TableCell>;
       case "before":
-        return <TableCell className="time-cell"><span className="duration">{formatDuration(practice.beforeSeconds)}</span>{formatTimeNote(practice, "before") && <span className="unit">{formatTimeNote(practice, "before")}</span>}</TableCell>;
+        return <TableCell className="time-cell"><span className="duration">{formatBefore(practice)}</span>{formatTimeNote(practice, "before") && <span className="unit">{formatTimeNote(practice, "before")}</span>}</TableCell>;
       case "after":
-        return <TableCell className="time-cell"><span className="duration">{formatDuration(practice.afterSeconds)}</span>{formatTimeNote(practice, "after") && <span className="unit">{formatTimeNote(practice, "after")}</span>}</TableCell>;
+        return <TableCell className="time-cell"><span className="duration">{formatAfter(practice)}</span>{formatTimeNote(practice, "after") && <span className="unit">{formatTimeNote(practice, "after")}</span>}</TableCell>;
       case "saving":
         return <TableCell className="effect-cell"><span className={`duration${formatSaving(practice) ? "" : " missing-value"}`}>{formatSaving(practice) ? `−${formatSaving(practice)}` : "—"}</span>{formatFactor(practice) && <span className="unit">в {formatFactor(practice)} быстрее</span>}</TableCell>;
       case "status":
@@ -553,13 +765,13 @@ export default function App() {
                 type="button"
                 variant="tertiary"
                 size="compact"
-                leadingIcon={SlidersHorizontal}
+                leadingIcon={Settings}
                 className="toolbar-chip"
                 aria-expanded={openMenu === "view"}
                 aria-haspopup="dialog"
                 onClick={() => setOpenMenu((open) => open === "view" ? null : "view")}
               >
-                Вид
+                Столбцы
               </Button>
               {openMenu === "view" && (
                 <div className="toolbar-popover view-popover" role="dialog" aria-label="Видимые столбцы">
@@ -683,8 +895,8 @@ export default function App() {
               <DialogDescription>{selectedPractice.task || "Описание пока не добавлено."}</DialogDescription>
             </DialogHeader>
             <div className="dialog-timing">
-              <div><span>Без AI</span><strong>{formatDuration(selectedPractice.beforeSeconds)}</strong><small>{formatTimeNote(selectedPractice, "before") || "—"}</small></div>
-              <div><span>С AI</span><strong>{formatDuration(selectedPractice.afterSeconds)}</strong><small>{formatTimeNote(selectedPractice, "after") || "—"}</small></div>
+              <div><span>Без AI</span><strong>{formatBefore(selectedPractice)}</strong><small>{formatTimeNote(selectedPractice, "before") || "—"}</small></div>
+              <div><span>С AI</span><strong>{formatAfter(selectedPractice)}</strong><small>{formatTimeNote(selectedPractice, "after") || "—"}</small></div>
             </div>
             <div className="dialog-result">
               <span>Экономия времени</span>
